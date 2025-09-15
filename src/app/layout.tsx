@@ -1,8 +1,9 @@
-import type { Metadata } from "next";
+import React from "react";
 import { Merriweather, Manrope } from "next/font/google";
 import "./globals.css";
 import { Header } from "../components/ui/Header";
 import { Footer } from "../components/ui/Footer";
+import { sanityClient } from "../sanity/client";
 
 const merriweather = Merriweather({
   subsets: ["latin"],
@@ -15,16 +16,23 @@ const manrope = Manrope({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: "The Carenest",
-  description: "A calm, high-end directory for wellbeing support.",
-};
+export async function generateMetadata() {
+  const settings = await sanityClient.fetch(
+    `*[_type == "siteSettings"][0]{siteTitle, siteDescription}`
+  );
+  return {
+    title: settings?.siteTitle || "The Carenest",
+    description:
+      settings?.siteDescription ||
+      "A calm, high-end directory for wellbeing support.",
+  };
+}
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
       <body
