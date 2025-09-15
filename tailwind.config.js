@@ -9,11 +9,14 @@ module.exports = {
     extend: {
       fontFamily: {
         sans: [
-          "var(--font-inter)",
           "var(--font-manrope)",
           "ui-sans-serif",
           "system-ui",
           "sans-serif",
+        ],
+        serif: [
+          "var(--font-merriweather)",
+          "serif",
         ],
       },
       colors: {
@@ -25,11 +28,11 @@ module.exports = {
           700: "#1e40af",
           800: "#1e3a8a",
         },
+        accent: {
+          DEFAULT: "#f4f0e0",
+        },
+        "text-main": "#0d0c06",
       },
-      accent: {
-        DEFAULT: "#f4f0e0",
-      },
-      "text-main": "#0d0c06",
     },
   },
   plugins: [],
