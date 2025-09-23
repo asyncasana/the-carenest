@@ -2,41 +2,39 @@ import { defineType, defineField } from "sanity";
 
 export default defineType({
   name: "category",
-  title: "Category",
+  title: "📂 Service Category",
   type: "document",
-  orderings: [
-    {
-      title: "Order",
-      name: "orderAsc",
-      by: [
-        { field: "order", direction: "asc" },
-        { field: "title", direction: "asc" },
-      ],
-    },
-  ],
+  icon: () => "📂",
   fields: [
     defineField({
-      name: "title",
-      title: "Title",
+      name: "categoryName",
+      title: "Category Name",
       type: "string",
       validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: "slug",
-      title: "Slug",
+      title: "URL Slug",
       type: "slug",
-      options: { source: "title", maxLength: 96 },
+      options: { source: "categoryName", maxLength: 96 },
       validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: "description",
-      title: "Description",
+      title: "Category Description",
       type: "text",
     }),
     defineField({
-      name: "order",
-      title: "Order",
+      name: "displayOrder",
+      title: "Display Order",
       type: "number",
+      initialValue: 100,
     }),
   ],
+  preview: {
+    select: {
+      title: "categoryName",
+      subtitle: "description",
+    },
+  },
 });

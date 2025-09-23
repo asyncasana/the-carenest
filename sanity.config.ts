@@ -9,7 +9,7 @@ import { defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
 
 // Go to https://www.sanity.io/docs/api-versioning to learn how API versioning works
-import { schemaTypes } from "./src/app/studio/schemas";
+import { schemaTypes } from "./src/sanity/schemas";
 import { structure } from "./src/sanity/structure";
 
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "lawxbwsy";

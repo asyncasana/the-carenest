@@ -1,9 +1,10 @@
 import { defineType, defineField } from "sanity";
 
 export default defineType({
-  name: "blog",
-  title: "Blog Post",
+  name: "page",
+  title: "📄 Page", 
   type: "document",
+  icon: () => "📄",
   fields: [
     defineField({
       name: "title",
@@ -19,28 +20,16 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: "publishedAt",
-      title: "Published At",
-      type: "datetime",
-      validation: (Rule) => Rule.required(),
-    }),
-    defineField({
-      name: "excerpt",
-      title: "Excerpt",
-      type: "text",
-    }),
-    defineField({
-      name: "body",
-      title: "Body",
+      name: "content",
+      title: "Content",
       type: "array",
       of: [{ type: "block" }],
-      validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: "coverImage",
-      title: "Cover Image",
-      type: "image",
-      options: { hotspot: true },
+      name: "isPublished",
+      title: "Published",
+      type: "boolean",
+      initialValue: false,
     }),
   ],
 });

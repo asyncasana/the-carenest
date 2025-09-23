@@ -24,3 +24,27 @@ export type Entry = {
   priority?: number;
   published?: boolean;
 };
+
+export type DirectoryEntry = {
+  _id: string;
+  serviceName: string;
+  slug: { current: string };
+  shortDescription: string;
+  serviceArea: string;
+  town?: string;
+  website?: string;
+  phone?: string;
+  email?: string;
+  serviceCategories?: Array<{
+    categoryName: string;
+    slug: { current: string };
+  }>;
+  fundingTypes?: string[];
+  isPublished: boolean;
+  location?: {
+    lat: number;
+    lng: number;
+    address?: string;
+  };
+  distance?: number;
+};

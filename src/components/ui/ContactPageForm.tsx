@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 
-export function ContactForm() {
+export function ContactPageForm() {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [status, setStatus] = useState<null | "success" | "error" | "loading">(
     null
@@ -24,14 +24,14 @@ export function ContactForm() {
   }
 
   return (
-    <div className="bg-gradient-to-br from-neutral-50 to-white py-16">
-      <div className="max-w-lg mx-auto px-6">
+    <div className="bg-gradient-to-br from-neutral-50 to-white">
+      <div className="max-w-lg mx-auto">
         <form
           onSubmit={handleSubmit}
           className="bg-white/90 backdrop-blur border border-neutral-200/60 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 space-y-6"
         >
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-light text-neutral-800 mb-2">
+            <h2 className="text-2xl font-light text-neutral-800 mb-2">
               Get in Touch
             </h2>
             <p className="text-neutral-600">
@@ -134,13 +134,13 @@ export function ContactForm() {
           </button>
 
           {status === "success" && (
-            <div className="bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 rounded-lg text-center">
-              ✅ Message sent successfully! We'll be in touch soon.
+            <div className="bg-neutral-50 border border-neutral-200 text-neutral-700 px-4 py-3 rounded-lg text-center">
+              Thank you for your message. We'll get back to you soon.
             </div>
           )}
           {status === "error" && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-center">
-              ❌ Something went wrong. Please try again.
+            <div className="bg-neutral-50 border border-neutral-300 text-neutral-600 px-4 py-3 rounded-lg text-center">
+              We couldn't send your message right now. Please try again.
             </div>
           )}
         </form>

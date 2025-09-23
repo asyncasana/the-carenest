@@ -2,8 +2,9 @@ import { defineType, defineField } from "sanity";
 
 export default defineType({
   name: "faq",
-  title: "FAQ",
+  title: "❓ FAQ",
   type: "document",
+  icon: () => "❓",
   fields: [
     defineField({
       name: "question",
@@ -14,19 +15,20 @@ export default defineType({
     defineField({
       name: "answer",
       title: "Answer",
-      type: "text",
+      type: "array",
+      of: [{ type: "block" }],
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: "order",
-      title: "Order",
-      type: "number",
+      name: "category",
+      title: "Category",
+      type: "string",
     }),
     defineField({
-      name: "published",
-      title: "Published",
-      type: "boolean",
-      initialValue: true,
+      name: "displayOrder",
+      title: "Display Order",
+      type: "number",
+      initialValue: 100,
     }),
   ],
 });

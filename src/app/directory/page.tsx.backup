@@ -69,17 +69,18 @@ function DirectoryContent() {
   const [pageContent, setPageContent] = useState<any>(null);
 
   useEffect(() => {
+    useEffect(() => {
     async function loadEntries() {
       try {
         setLoading(true);
         setSearchLoading(true);
-
+        
         const [data, content] = await Promise.all([
           getDirectoryEntries(),
-          getDirectoryPageContent(),
+          getDirectoryPageContent()
         ]);
         setPageContent(content);
-
+        
         let filteredEntries = data;
 
         // Get search parameters
@@ -146,8 +147,7 @@ function DirectoryContent() {
             {pageContent?.directoryPageTitle || "Care Directory"}
           </h1>
           <p className="text-lg text-neutral-600 mb-8 leading-relaxed">
-            {pageContent?.directoryPageSubtitle ||
-              "Browse trusted wellbeing and care services in your area. Each service has been carefully reviewed to ensure quality and reliability."}
+            {pageContent?.directoryPageSubtitle || "Browse trusted wellbeing and care services in your area. Each service has been carefully reviewed to ensure quality and reliability."}
           </p>
 
           {/* Search Status */}
