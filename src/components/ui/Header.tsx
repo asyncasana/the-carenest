@@ -37,10 +37,7 @@ export function Header() {
     fetchSettings();
   }, []);
 
-  const baseNavItems = [
-    { href: "/", label: "Home" },
-    { href: "/directory", label: "Directory" },
-  ];
+  const baseNavItems = [{ href: "/directory", label: "Directory" }];
 
   const conditionalNavItems = [];
   if (headerSettings.showBlogPage !== false) {
@@ -59,24 +56,23 @@ export function Header() {
   return (
     <header className="w-full bg-gradient-to-b from-white/95 to-white/80 backdrop-blur-sm border-b border-neutral-200/50 sticky top-0 z-50 overflow-visible">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-[120px] sm:h-[140px]">
-          {/* Logo */}
-          <Link
-            href="/"
-            className="flex-shrink-0 group transition-transform duration-200 hover:scale-105 h-full flex items-center"
-          >
-            <Image
-              src={headerSettings.logo?.asset?.url || "/logo.svg"}
-              alt={headerSettings.logoAlt || "The Carenest logo"}
-              width={140}
-              height={140}
-              className="drop-shadow-sm group-hover:drop-shadow-md transition-all duration-200 h-full w-auto"
-              priority
-            />
+        <div className="flex items-center justify-center h-[120px] sm:h-[140px] relative">
+          {/* Logo - Centered */}
+          <Link href="/" className="flex-shrink-0 h-full flex items-center">
+            {headerSettings.logo?.asset?.url && (
+              <Image
+                src={headerSettings.logo.asset.url}
+                alt={headerSettings.logoAlt || "The Carenest logo"}
+                width={140}
+                height={140}
+                className="drop-shadow-sm h-full w-auto"
+                priority
+              />
+            )}
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-8">
+          {/* Desktop Navigation - Positioned to the right */}
+          <nav className="hidden md:flex space-x-8 absolute right-0">
             {navItems.map((item) => (
               <Link
                 key={item.href}
@@ -89,10 +85,10 @@ export function Header() {
             ))}
           </nav>
 
-          {/* Mobile menu button */}
+          {/* Mobile menu button - Positioned to the right */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-accent transition-colors duration-200"
+            className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-accent transition-colors duration-200 absolute right-0"
             aria-expanded="false"
           >
             <span className="sr-only">Open main menu</span>

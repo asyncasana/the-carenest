@@ -6,6 +6,7 @@ import { urlFor } from "../../../lib/sanity";
 import Image from "next/image";
 import Link from "next/link";
 import { PortableText } from "@portabletext/react";
+import Breadcrumb from "../../../components/ui/Breadcrumb";
 
 type DirectoryEntry = {
   serviceName: string;
@@ -112,6 +113,17 @@ export default async function DirectoryEntryPage({
       <Container className="py-16">
         {/* Header */}
         <div className="mb-12">
+          {/* Breadcrumbs */}
+          <div className="mb-6">
+            <Breadcrumb
+              items={[
+                { label: "Home", href: "/" },
+                { label: "Directory", href: "/directory" },
+                { label: entry.serviceName },
+              ]}
+            />
+          </div>
+
           <Link
             href="/directory"
             className="inline-flex items-center text-sm text-neutral-600 hover:text-neutral-900 mb-4"

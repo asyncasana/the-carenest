@@ -5,6 +5,7 @@ import category from "./category";
 import blog from "./blog";
 import faq from "./faq";
 import page from "./page";
+import aboutCarouselItem from "./aboutCarouselItem";
 
 // System Types
 import siteSettings from "./siteSettings";
@@ -22,6 +23,9 @@ export const schemaTypes = [
 
   // Other Pages
   page,
+
+  // About Section
+  aboutCarouselItem,
 
   // System Settings
   siteSettings,

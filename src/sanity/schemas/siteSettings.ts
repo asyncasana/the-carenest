@@ -76,6 +76,28 @@ export default defineType({
       description: "Main introduction text on homepage",
     }),
 
+    // About Section
+    defineField({
+      name: "showAboutSection",
+      title: "Show About Section",
+      type: "boolean",
+      description: "Display About section on homepage between hero and search",
+      initialValue: false,
+    }),
+    defineField({
+      name: "aboutSectionTitle",
+      title: "About Section Title",
+      type: "string",
+      description: "Main title for the About section",
+    }),
+    defineField({
+      name: "aboutSectionDescription",
+      title: "About Section Description",
+      type: "string",
+      validation: (Rule) => Rule.max(200),
+      description: "Optional subtitle/description - max 200 characters",
+    }),
+
     // Search Section
     defineField({
       name: "searchSectionTitle",

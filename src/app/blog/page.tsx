@@ -4,6 +4,36 @@ import Image from "next/image";
 import { Container } from "@/components/ui/Container";
 import { sanityClient } from "@/sanity/client";
 import { urlFor } from "@/lib/sanity";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Blog & Resources | The Carenest",
+  description:
+    "Insights, updates, and helpful resources about care and wellbeing services in Colchester, Essex, and surrounding areas.",
+  keywords: [
+    "care blog",
+    "wellbeing resources",
+    "health insights",
+    "care services",
+    "Colchester",
+    "Essex",
+  ],
+  openGraph: {
+    title: "Blog & Resources | The Carenest",
+    description:
+      "Insights, updates, and helpful resources about care and wellbeing services in our community.",
+    url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://thecarenest.co.uk"}/blog`,
+    siteName: "The Carenest",
+    locale: "en_GB",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Blog & Resources | The Carenest",
+    description:
+      "Insights, updates, and helpful resources about care and wellbeing services in our community.",
+  },
+};
 
 type BlogPost = {
   _id: string;

@@ -19,6 +19,13 @@ export const structure: StructureResolver = (S) =>
 
       S.divider(),
 
+      // About Section
+      S.listItem()
+        .title("About Carousel Items")
+        .child(S.documentTypeList("aboutCarouselItem")),
+
+      S.divider(),
+
       // Directory Content
       S.listItem()
         .title("Directory Entries")

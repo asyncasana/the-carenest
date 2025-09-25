@@ -25,7 +25,10 @@ const DirectoryMap = dynamic(
     ssr: false,
     loading: () => (
       <div className="w-full h-96 bg-neutral-100 rounded-lg flex items-center justify-center">
-        <div className="text-neutral-500">Loading map...</div>
+        <div className="text-neutral-500 flex items-center gap-2">
+          <div className="w-4 h-4 border-2 border-neutral-400 border-t-transparent rounded-full animate-spin"></div>
+          Loading map...
+        </div>
       </div>
     ),
   }
@@ -67,6 +70,7 @@ function DirectoryContent() {
   const [loading, setLoading] = useState(true);
   const [searchLoading, setSearchLoading] = useState(false);
   const [pageContent, setPageContent] = useState<any>(null);
+  const [postcodeError, setPostcodeError] = useState<string>("");
 
   useEffect(() => {
     async function loadEntries() {
@@ -98,12 +102,20 @@ function DirectoryContent() {
         // Sort by distance if postcode provided
         if (postcode && filteredEntries.length > 0) {
           try {
+            setPostcodeError("");
             const postcodeCoords = await geocodePostcode(postcode);
             if (postcodeCoords) {
               filteredEntries = sortByDistance(filteredEntries, postcodeCoords);
+            } else {
+              setPostcodeError(
+                `"${postcode}" is not a valid UK postcode. Try formats like CO1 1AA, M1 1AA, or B33 8TH.`
+              );
             }
           } catch (error) {
             console.error("Failed to geocode postcode:", error);
+            setPostcodeError(
+              `Unable to find postcode "${postcode}". Please check the spelling or try a nearby postcode.`
+            );
           }
         }
 
@@ -152,41 +164,71 @@ function DirectoryContent() {
 
           {/* Search Status */}
           {searchParams.get("postcode") || searchParams.get("category") ? (
-            <div className="mb-8 p-4 bg-blue-50/80 border border-blue-200/60 rounded-lg">
-              <div className="flex items-center gap-2 text-blue-700">
-                {searchLoading ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                    <span>Finding services near you...</span>
-                  </>
-                ) : (
-                  <>
-                    <svg
-                      className="w-5 h-5"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    <span>
-                      {entries.length} service{entries.length !== 1 ? "s" : ""}{" "}
-                      found
-                      {searchParams.get("postcode") &&
-                        ` near ${searchParams.get("postcode")?.toUpperCase()}`}
-                      {searchParams.get("category") &&
-                        searchParams.get("category") !== "all" &&
-                        ` in category: ${searchParams.get("category")}`}
-                      {searchParams.get("postcode") &&
-                        entries.length > 0 &&
-                        entries[0].distance &&
-                        ` (closest: ${entries[0].distance.toFixed(1)} miles)`}
-                    </span>
-                  </>
-                )}
+            <div className="mb-8 space-y-4">
+              <div
+                className={`p-4 rounded-lg border ${postcodeError ? "bg-red-50/80 border-red-200/60" : "bg-blue-50/80 border-blue-200/60"}`}
+              >
+                <div
+                  className={`flex items-center gap-2 ${postcodeError ? "text-red-700" : "text-blue-700"}`}
+                >
+                  {searchLoading ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                      <span>Finding services near you...</span>
+                    </>
+                  ) : postcodeError ? (
+                    <>
+                      <svg
+                        className="w-5 h-5 flex-shrink-0"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      <div>
+                        <p className="font-medium">Postcode Error</p>
+                        <p className="text-sm mt-1">{postcodeError}</p>
+                        <p className="text-xs mt-2 opacity-75">
+                          Showing all services instead. You can still browse by
+                          category.
+                        </p>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <svg
+                        className="w-5 h-5"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      <span>
+                        {entries.length} service
+                        {entries.length !== 1 ? "s" : ""} found
+                        {searchParams.get("postcode") &&
+                          !postcodeError &&
+                          ` near ${searchParams.get("postcode")?.toUpperCase()}`}
+                        {searchParams.get("category") &&
+                          searchParams.get("category") !== "all" &&
+                          ` in category: ${searchParams.get("category")}`}
+                        {searchParams.get("postcode") &&
+                          entries.length > 0 &&
+                          entries[0].distance &&
+                          entries[0].distance !== Infinity &&
+                          ` (closest: ${entries[0].distance.toFixed(1)} miles)`}
+                      </span>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           ) : null}
@@ -200,10 +242,10 @@ function DirectoryContent() {
                   <div
                     key={entry._id}
                     onClick={() => handleEntryClick(entry._id)}
-                    className={`group cursor-pointer bg-white/90 backdrop-blur border rounded-xl p-6 hover:shadow-lg hover:shadow-neutral-200/50 transition-all duration-300 hover:scale-[1.02] ${
+                    className={`group cursor-pointer bg-white border rounded-xl p-6 hover:shadow-xl hover:shadow-neutral-200/25 transition-all duration-300 ${
                       selectedEntryId === entry._id
-                        ? "border-blue-300 ring-2 ring-blue-200"
-                        : "border-neutral-200/60 hover:border-neutral-300/80"
+                        ? "border-blue-300 ring-2 ring-blue-200 shadow-lg"
+                        : "border-neutral-200 hover:border-amber-200 hover:-translate-y-1"
                     }`}
                     style={{
                       animationDelay: `${index * 100}ms`,

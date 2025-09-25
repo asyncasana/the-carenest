@@ -24,6 +24,20 @@ export async function generateMetadata() {
   return {
     title: settings?.siteTitle,
     description: settings?.siteDescription,
+    // Performance optimizations
+    metadataBase: new URL("https://the-carenest.co.uk"),
+    alternates: {
+      canonical: "/",
+    },
+    openGraph: {
+      title: settings?.siteTitle,
+      description: settings?.siteDescription,
+      type: "website",
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
   };
 }
 
@@ -34,8 +48,22 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        {/* Critical performance optimizations */}
+        <link rel="dns-prefetch" href="https://cdn.sanity.io" />
+        <link
+          rel="preconnect"
+          href="https://cdn.sanity.io"
+          crossOrigin="anonymous"
+        />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, viewport-fit=cover"
+        />
+      </head>
       <body
         className={`min-h-screen ${merriweather.variable} ${manrope.variable} font-sans antialiased bg-white text-neutral-900 selection:bg-primary-100 selection:text-primary-900`}
+        suppressHydrationWarning={true}
       >
         <Header />
         <main>{children}</main>

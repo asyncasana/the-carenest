@@ -1,6 +1,5 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   images: {
     remotePatterns: [
       {
@@ -18,7 +17,9 @@ const nextConfig: NextConfig = {
   },
   // Enable compression
   compress: true,
-  // Performance headers for caching and security
+  // Optimize production builds
+  swcMinify: true,
+  // Performance headers
   async headers() {
     return [
       {
@@ -29,13 +30,31 @@ const nextConfig: NextConfig = {
             value: "on",
           },
           {
+            key: "Strict-Transport-Security",
+            value: "max-age=63072000; includeSubDomains; preload",
+          },
+          {
             key: "X-Content-Type-Options",
             value: "nosniff",
+          },
+          {
+            key: "X-Frame-Options",
+            value: "DENY",
           },
         ],
       },
       {
-        // Cache static assets aggressively
+        // Cache static assets
+        source: "/favicon.ico",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      {
+        // Cache logo and other SVGs
         source: "/(.*)\\.svg$",
         headers: [
           {
@@ -63,4 +82,4 @@ const nextConfig: NextConfig = {
   serverExternalPackages: ["@sanity/client"],
 };
 
-export default nextConfig;
+module.exports = nextConfig;
