@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 import { sanityClient } from "../../../sanity/client";
 import { Container } from "../../../components/ui/Container";
-import { urlFor } from "../../../lib/sanity";
 import Image from "next/image";
 import Link from "next/link";
 import { PortableText, type PortableTextBlock } from "@portabletext/react";
@@ -85,9 +84,10 @@ async function getEntry(slug: string): Promise<DirectoryEntry | null> {
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const entry = await getEntry(params.slug);
+  const { slug } = await params;
+  const entry = await getEntry(slug);
   if (!entry) return {};
 
   return {
@@ -99,9 +99,10 @@ export async function generateMetadata({
 export default async function DirectoryEntryPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const entry = await getEntry(params.slug);
+  const { slug } = await params;
+  const entry = await getEntry(slug);
 
   if (!entry) {
     notFound();

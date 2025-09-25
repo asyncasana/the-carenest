@@ -81,8 +81,8 @@ export function CookieBanner() {
                 Cookie Settings
               </h3>
               <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed">
-                We use cookies to enhance your experience. By clicking &ldquo;Accept
-                All&rdquo;, you consent to our use of cookies.{" "}
+                We use cookies to enhance your experience. By clicking
+                &ldquo;Accept All&rdquo;, you consent to our use of cookies.{" "}
                 <button
                   onClick={() => setShowPreferences(true)}
                   className="underline hover:no-underline text-amber-700"

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { Suspense } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { Container } from "@/components/ui/Container";
@@ -8,10 +8,7 @@ import { Tag } from "@/components/ui/Tag";
 import { sanityClient } from "@/sanity/client";
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import {
-  geocodePostcode,
-  sortByDistance,
-} from "@/lib/geolocation";
+import { geocodePostcode, sortByDistance } from "@/lib/geolocation";
 import type { DirectoryEntry } from "@/types/content";
 
 // Dynamic import to avoid SSR issues with Leaflet
@@ -412,5 +409,22 @@ function DirectoryContent() {
 }
 
 export default function DirectoryPage() {
-  return <DirectoryContent />;
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gradient-to-br from-neutral-50 to-white">
+          <Container className="py-16">
+            <div className="text-center">
+              <div className="text-neutral-500 flex items-center justify-center gap-2">
+                <div className="w-4 h-4 border-2 border-neutral-400 border-t-transparent rounded-full animate-spin"></div>
+                Loading directory...
+              </div>
+            </div>
+          </Container>
+        </div>
+      }
+    >
+      <DirectoryContent />
+    </Suspense>
+  );
 }

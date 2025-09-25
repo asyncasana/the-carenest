@@ -4,7 +4,11 @@ import Image from "next/image";
 import { Container } from "@/components/ui/Container";
 import { sanityClient } from "@/sanity/client";
 import { urlFor } from "@/lib/sanity";
-import { PortableText, type PortableTextBlock, type PortableTextComponents } from "@portabletext/react";
+import {
+  PortableText,
+  type PortableTextBlock,
+  type PortableTextComponents,
+} from "@portabletext/react";
 import { notFound } from "next/navigation";
 import ShareArticle from "@/components/ui/ShareArticle";
 import Breadcrumb from "@/components/ui/Breadcrumb";
