@@ -53,7 +53,7 @@ export default defineType({
       description: "Can be external (https://...) or internal (/page-name)",
       validation: (Rule) =>
         Rule.custom((url, context) => {
-          const ctaText = (context.parent as any)?.ctaText;
+          const ctaText = (context.parent as { ctaText?: string })?.ctaText;
           if (ctaText && !url) {
             return "URL is required when CTA text is provided";
           }

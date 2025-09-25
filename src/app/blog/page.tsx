@@ -40,7 +40,14 @@ type BlogPost = {
   title: string;
   slug: { current: string };
   excerpt?: string;
-  featuredImage?: any;
+  featuredImage?: {
+    _type: string;
+    asset: {
+      _ref: string;
+      _type: string;
+    };
+    alt?: string;
+  };
   publishedAt: string;
   _createdAt: string;
   author?: string;

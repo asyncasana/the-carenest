@@ -7,7 +7,7 @@ import type { DirectoryEntry } from "@/types/content";
 
 // Fix for default markers in react-leaflet
 if (typeof window !== "undefined") {
-  delete (L.Icon.Default.prototype as any)._getIconUrl;
+  delete (L.Icon.Default.prototype as unknown as Record<string, unknown>)._getIconUrl;
   L.Icon.Default.mergeOptions({
     iconRetinaUrl:
       "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
@@ -170,7 +170,7 @@ export function DirectoryMap({
             position={[entry.location!.lat, entry.location!.lng]}
             icon={createCustomIcon(entry._id === selectedEntryId)}
             eventHandlers={{
-              click: (e) => {
+              click: () => {
                 onMarkerClick(entry._id);
                 // Pan to marker on mobile to center popup
                 if (mapRef.current && window.innerWidth < 768) {

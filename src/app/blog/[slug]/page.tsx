@@ -4,19 +4,30 @@ import Image from "next/image";
 import { Container } from "@/components/ui/Container";
 import { sanityClient } from "@/sanity/client";
 import { urlFor } from "@/lib/sanity";
-import { PortableText } from "@portabletext/react";
+import { PortableText, type PortableTextBlock, type PortableTextComponents } from "@portabletext/react";
 import { notFound } from "next/navigation";
 import ShareArticle from "@/components/ui/ShareArticle";
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import { Metadata } from "next";
+
+type SanityImageAsset = {
+  _ref: string;
+  _type: string;
+};
+
+type SanityImage = {
+  _type: string;
+  asset: SanityImageAsset;
+  alt?: string;
+};
 
 type BlogPost = {
   _id: string;
   title: string;
   slug: { current: string };
   excerpt?: string;
-  content?: any[];
-  featuredImage?: any;
+  content?: PortableTextBlock[];
+  featuredImage?: SanityImage;
   publishedAt: string;
   author?: string;
   _createdAt: string;
@@ -111,9 +122,9 @@ export async function generateMetadata({
   };
 }
 
-const portableTextComponents = {
+const portableTextComponents: PortableTextComponents = {
   types: {
-    image: ({ value }: any) => (
+    image: ({ value }: { value: SanityImage & { caption?: string } }) => (
       <div className="my-8">
         <Image
           src={urlFor(value).url()}
@@ -131,32 +142,32 @@ const portableTextComponents = {
     ),
   },
   block: {
-    h1: ({ children }: any) => (
+    h1: ({ children }) => (
       <h1 className="text-3xl font-bold text-neutral-800 mt-8 mb-4">
         {children}
       </h1>
     ),
-    h2: ({ children }: any) => (
+    h2: ({ children }) => (
       <h2 className="text-2xl font-semibold text-neutral-800 mt-6 mb-3">
         {children}
       </h2>
     ),
-    h3: ({ children }: any) => (
+    h3: ({ children }) => (
       <h3 className="text-xl font-semibold text-neutral-800 mt-5 mb-2">
         {children}
       </h3>
     ),
-    h4: ({ children }: any) => (
+    h4: ({ children }) => (
       <h4 className="text-lg font-medium text-neutral-800 mt-4 mb-2">
         {children}
       </h4>
     ),
-    blockquote: ({ children }: any) => (
+    blockquote: ({ children }) => (
       <blockquote className="border-l-4 border-amber-200 pl-4 my-6 italic text-neutral-700 bg-amber-50/50 py-2">
         {children}
       </blockquote>
     ),
-    normal: ({ children }: any) => (
+    normal: ({ children }) => (
       <p className="text-neutral-700 leading-relaxed mb-4">{children}</p>
     ),
   },

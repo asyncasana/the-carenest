@@ -1,18 +1,17 @@
 import { notFound } from "next/navigation";
 import { sanityClient } from "../../../sanity/client";
 import { Container } from "../../../components/ui/Container";
-import { Button } from "../../../components/ui/Button";
 import { urlFor } from "../../../lib/sanity";
 import Image from "next/image";
 import Link from "next/link";
-import { PortableText } from "@portabletext/react";
+import { PortableText, type PortableTextBlock } from "@portabletext/react";
 import Breadcrumb from "../../../components/ui/Breadcrumb";
 
 type DirectoryEntry = {
   serviceName: string;
   slug: { current: string };
   shortDescription: string;
-  fullDescription?: any[];
+  fullDescription?: PortableTextBlock[];
   galleryImages?: Array<{
     _key: string;
     asset: { url: string };
@@ -253,7 +252,7 @@ export default async function DirectoryEntryPage({
                       className="bg-white p-6 rounded-lg border border-neutral-200 shadow-sm"
                     >
                       <p className="text-neutral-700 italic mb-3">
-                        "{review.reviewText}"
+                        &ldquo;{review.reviewText}&rdquo;
                       </p>
                       <div className="flex items-center gap-3">
                         {review.starRating && (

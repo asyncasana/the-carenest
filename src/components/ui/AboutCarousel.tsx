@@ -88,7 +88,7 @@ export function AboutCarousel({ items }: AboutCarouselProps) {
     return (
       <div className="text-center py-8">
         <p className="text-neutral-500 text-sm">
-          No carousel items yet. Add some "About Carousel Items" in Sanity to
+          No carousel items yet. Add some &ldquo;About Carousel Items&rdquo; in Sanity to
           see the carousel here.
         </p>
       </div>

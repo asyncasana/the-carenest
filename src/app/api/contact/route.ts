@@ -12,9 +12,10 @@ export async function POST(req: NextRequest) {
     }
     await sendContactEmail({ name, email, message });
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch (err) {
+    console.error("Error sending email:", err);
     return NextResponse.json(
-      { error: "Failed to send message." },
+      { error: "Failed to send email" },
       { status: 500 }
     );
   }

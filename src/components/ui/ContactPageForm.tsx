@@ -35,7 +35,7 @@ export function ContactPageForm() {
               Get in Touch
             </h2>
             <p className="text-neutral-600">
-              Have a question? We'd love to hear from you.
+              Have a question? We&apos;d love to hear from you.
             </p>
           </div>
 
@@ -135,12 +135,12 @@ export function ContactPageForm() {
 
           {status === "success" && (
             <div className="bg-neutral-50 border border-neutral-200 text-neutral-700 px-4 py-3 rounded-lg text-center">
-              Thank you for your message. We'll get back to you soon.
+              Thank you for your message. We&apos;ll get back to you soon.
             </div>
           )}
           {status === "error" && (
             <div className="bg-neutral-50 border border-neutral-300 text-neutral-600 px-4 py-3 rounded-lg text-center">
-              We couldn't send your message right now. Please try again.
+              We couldn&apos;t send your message right now. Please try again.
             </div>
           )}
         </form>

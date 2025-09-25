@@ -11,7 +11,6 @@ import { useSearchParams } from "next/navigation";
 import {
   geocodePostcode,
   sortByDistance,
-  type Coordinates,
 } from "@/lib/geolocation";
 import type { DirectoryEntry } from "@/types/content";
 
@@ -69,7 +68,17 @@ function DirectoryContent() {
   const [selectedEntryId, setSelectedEntryId] = useState<string>();
   const [loading, setLoading] = useState(true);
   const [searchLoading, setSearchLoading] = useState(false);
-  const [pageContent, setPageContent] = useState<any>(null);
+  const [pageContent, setPageContent] = useState<{
+    directoryPageTitle?: string;
+    directoryPageSubtitle?: string;
+    searchSectionTitle?: string;
+    searchSectionSubtitle?: string;
+    searchCTAText?: string;
+    postcodeLabel?: string;
+    postcodePlaceholder?: string;
+    categoryLabel?: string;
+    categoryPlaceholder?: string;
+  } | null>(null);
   const [postcodeError, setPostcodeError] = useState<string>("");
 
   useEffect(() => {
