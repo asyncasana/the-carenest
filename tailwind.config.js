@@ -14,10 +14,7 @@ module.exports = {
           "system-ui",
           "sans-serif",
         ],
-        serif: [
-          "var(--font-merriweather)",
-          "serif",
-        ],
+        serif: ["var(--font-merriweather)", "serif"],
       },
       colors: {
         primary: {
