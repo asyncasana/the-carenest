@@ -1,8 +1,14 @@
 @import "tailwindcss";
-@import "leaflet/dist/leaflet.css";
 
+/* Critical CSS - inline the most important styles */
 body {
   @apply font-sans bg-white;
+  font-display: swap;
+}
+
+/* Defer non-critical leaflet CSS */
+@media screen {
+  @import "leaflet/dist/leaflet.css";
 }
 
 h1,

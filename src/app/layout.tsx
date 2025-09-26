@@ -10,11 +10,15 @@ const merriweather = Merriweather({
   subsets: ["latin"],
   variable: "--font-merriweather",
   display: "swap",
+  weight: ["300", "400", "700"], // Only load needed weights
+  preload: true,
 });
 const manrope = Manrope({
   subsets: ["latin"],
   variable: "--font-manrope",
   display: "swap",
+  weight: ["400", "500", "600"], // Only load needed weights
+  preload: true,
 });
 
 export async function generateMetadata() {
@@ -51,14 +55,34 @@ export default function RootLayout({
       <head>
         {/* Critical performance optimizations */}
         <link rel="dns-prefetch" href="https://cdn.sanity.io" />
+        <link rel="dns-prefetch" href="https://tile.openstreetmap.org" />
         <link
           rel="preconnect"
           href="https://cdn.sanity.io"
           crossOrigin="anonymous"
         />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
         <meta
           name="viewport"
           content="width=device-width, initial-scale=1, viewport-fit=cover"
+        />
+        <meta name="format-detection" content="telephone=no" />
+        {/* Reduce layout shifts */}
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `
+            @media (max-width: 768px) {
+              body { font-size: 14px; }
+            }
+            .service-list { min-height: 200px; }
+            .leaflet-container { background: #f5f5f5; }
+          `,
+          }}
         />
       </head>
       <body

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, memo } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import type { DirectoryEntry } from "@/types/content";
@@ -75,7 +75,7 @@ function MapController({ selectedEntry }: { selectedEntry?: DirectoryEntry }) {
   return null;
 }
 
-export function DirectoryMap({
+export const DirectoryMap = memo(function DirectoryMap({
   entries,
   selectedEntryId,
   onMarkerClick,
@@ -85,17 +85,23 @@ export function DirectoryMap({
   const mapRef = useRef<L.Map | null>(null);
 
   // Only render map on client side to avoid SSR issues
+
+  // Optimized client-side rendering with performance checks
   useEffect(() => {
-    // Check if we're in the browser environment and Leaflet is available
     if (typeof window !== "undefined" && L) {
-      setIsClient(true);
+      // Use requestAnimationFrame for smoother rendering
+      requestAnimationFrame(() => {
+        setIsClient(true);
 
-      // Ensure all scripts and CSS are loaded before showing map
-      const timer = setTimeout(() => {
-        setMapReady(true);
-      }, 150); // Slightly longer delay for better reliability
+        // Shorter delay with requestIdleCallback for better performance
+        const loadMap = () => setMapReady(true);
 
-      return () => clearTimeout(timer);
+        if ("requestIdleCallback" in window) {
+          requestIdleCallback(loadMap, { timeout: 100 });
+        } else {
+          setTimeout(loadMap, 100);
+        }
+      });
     }
   }, []);
   if (!isClient || !mapReady) {
@@ -110,14 +116,18 @@ export function DirectoryMap({
   }
 
   // Filter entries that have valid location data
-  const entriesWithLocation = entries.filter(
-    (entry) =>
+  const entriesWithLocation = entries.filter((entry) => {
+    const hasLocation =
       entry.location &&
       typeof entry.location.lat === "number" &&
       typeof entry.location.lng === "number" &&
       !isNaN(entry.location.lat) &&
-      !isNaN(entry.location.lng)
-  );
+      !isNaN(entry.location.lng);
+
+    return hasLocation;
+  });
+
+  // Use entriesWithLocation for map markers
 
   // Default center (Colchester area)
   const defaultCenter: [number, number] = [51.8959, 0.9035];
@@ -261,4 +271,4 @@ export function DirectoryMap({
       </MapContainer>
     </div>
   );
-}
+});
