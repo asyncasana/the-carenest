@@ -42,6 +42,11 @@ export default defineType({
       options: { collapsible: true, collapsed: true },
     },
     {
+      name: "directory",
+      title: "📂 Directory Settings", 
+      options: { collapsible: true, collapsed: true },
+    },
+    {
       name: "footer",
       title: "📄 Footer Settings",
       options: { collapsible: true, collapsed: true },
@@ -105,16 +110,11 @@ export default defineType({
       fieldset: "hero",
     }),
     defineField({
-      name: "heroTopLine",
-      title: "Hero Top Line",
-      type: "string",
-      description: "Small text above the main hero title",
-    }),
-    defineField({
       name: "heroTitle",
       title: "Hero Main Title",
       type: "string",
       description: "Main hero headline",
+      fieldset: "hero",
     }),
     defineField({
       name: "heroSubtitle",
@@ -294,28 +294,32 @@ export default defineType({
       title: "Directory Page Title",
       type: "string",
       description: "Main title for the directory page",
+      fieldset: "directory",
     }),
     defineField({
       name: "directoryPageSubtitle",
       title: "Directory Page Subtitle",
       type: "text",
       description: "Subtitle/description for the directory page",
+      fieldset: "directory",
     }),
 
     // Page Toggles
     defineField({
       name: "showBlogPage",
-      title: "Show Blog Page",
+      title: "Show Blog Page in Navigation",
       type: "boolean",
       description: "Display blog page in navigation",
       initialValue: true,
+      fieldset: "blog",
     }),
     defineField({
       name: "showFaqPage",
-      title: "Show FAQ Page",
+      title: "Show FAQ Page in Navigation",
       type: "boolean",
       description: "Display FAQ page in navigation",
       initialValue: true,
+      fieldset: "faq",
     }),
   ],
 });
