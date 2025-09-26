@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "./Button";
-import { sanityClient } from "../../sanity/client";
 
 type Category = {
   _id: string;
@@ -39,15 +38,16 @@ export function SearchForm({
       try {
         setIsLoadingCategories(true);
         console.log("🔍 SearchForm: Fetching categories...");
-        const fetchedCategories = await sanityClient.fetch(
-          `*[_type == "category"] | order(displayOrder asc, categoryName asc) {
-            _id,
-            categoryName,
-            slug
-          }`,
-          {},
-          { cache: "no-store" } // Force fresh fetch
-        );
+        
+        const response = await fetch('/api/categories', {
+          cache: 'no-store'
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const fetchedCategories = await response.json();
         console.log(
           "📋 SearchForm: Categories fetched:",
           fetchedCategories?.length,
