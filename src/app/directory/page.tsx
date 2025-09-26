@@ -1,20 +1,63 @@
-import { Suspense } from "react";
+"use client";
+
+import { Suspense, useState, useEffect } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { Container } from "@/components/ui/Container";
 import { Tag } from "@/components/ui/Tag";
 import { DirectoryToolbar } from "@/components/ui/DirectoryToolbar";
-import {
-  getDirectoryEntries,
-  getDirectoryPageContent,
-  getMapData,
-} from "@/lib/queries";
+import { sanityClient } from "@/sanity/client";
+import { geocodePostcode, sortByDistance } from "@/lib/geolocation";
 import type { DirectoryEntry } from "@/types/content";
 
-// Revalidate cache every 15 minutes
-export const revalidate = 900;
+// Fetch functions (moved from queries.ts for client-side use)
+async function getDirectoryEntries(): Promise<DirectoryEntry[]> {
+  return sanityClient.fetch(`
+    *[_type == "directoryEntry" && isPublished == true] | order(displayPriority asc, serviceName asc) {
+      _id,
+      serviceName,
+      slug,
+      shortDescription,
+      serviceArea,
+      town,
+      website,
+      phone,
+      email,
+      serviceCategories[]-> { categoryName, slug },
+      fundingTypes,
+      isPublished,
+      location
+    }
+  `);
+}
 
-// Server Component for rendering the list (LCP element) - Optimized for performance
-function DirectoryList({ entries }: { entries: DirectoryEntry[] }) {
+async function getDirectoryPageContent() {
+  return sanityClient.fetch(`
+    *[_type == "siteSettings"][0]{
+      directoryPageTitle,
+      directoryPageSubtitle
+    }
+  `);
+}
+
+async function getMapData(): Promise<DirectoryEntry[]> {
+  return sanityClient.fetch(`
+    *[_type == "directoryEntry" && isPublished == true && defined(location)] {
+      _id,
+      serviceName,
+      slug,
+      shortDescription,
+      serviceArea,
+      town,
+      serviceCategories[]-> { categoryName, slug },
+      fundingTypes,
+      location
+    }
+  `);
+}
+
+// Component for rendering the list with distance info
+function DirectoryList({ entries, searchPostcode }: { entries: (DirectoryEntry & { distance?: number })[], searchPostcode?: string }) {
   return (
     <div className="service-list space-y-6">
       {entries.length > 0 ? (
@@ -71,6 +114,11 @@ function DirectoryList({ entries }: { entries: DirectoryEntry[] }) {
                 </svg>
                 {entry.serviceArea}
                 {entry.town ? `, ${entry.town}` : ""}
+                {entry.distance && entry.distance !== Infinity && searchPostcode && (
+                  <span className="text-blue-600 font-medium ml-2">
+                    ({entry.distance.toFixed(1)} miles away)
+                  </span>
+                )}
               </span>
               {entry.phone && (
                 <span className="inline-flex items-center gap-2">
@@ -147,15 +195,15 @@ function DirectoryList({ entries }: { entries: DirectoryEntry[] }) {
   );
 }
 
-export default async function DirectoryPage() {
-  // Fetch data on server - optimized for LCP
-  const [entries, pageContent, mapEntries] = await Promise.all([
-    getDirectoryEntries(),
-    getDirectoryPageContent(),
-    getMapData(),
-  ]);
+function DirectoryContent() {
+  const searchParams = useSearchParams();
+  const [entries, setEntries] = useState<(DirectoryEntry & { distance?: number })[]>([]);
+  const [pageContent, setPageContent] = useState<any>(null);
+  const [mapEntries, setMapEntries] = useState<DirectoryEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchLoading, setSearchLoading] = useState(false);
 
-  // Get unique categories for filtering - server-side computation
+  // Get unique categories for filtering
   const categories = Array.from(
     new Set(
       entries
@@ -164,11 +212,80 @@ export default async function DirectoryPage() {
     )
   ).sort();
 
+  useEffect(() => {
+    async function loadEntries() {
+      try {
+        setLoading(true);
+        setSearchLoading(true);
+        
+        const [data, content, mapData] = await Promise.all([
+          getDirectoryEntries(),
+          getDirectoryPageContent(),
+          getMapData()
+        ]);
+        
+        setPageContent(content);
+        setMapEntries(mapData);
+        
+        let filteredEntries = data;
+
+        // Get search parameters
+        const postcode = searchParams.get("postcode");
+        const category = searchParams.get("category");
+
+        // Filter by category if provided
+        if (category && category !== "all") {
+          filteredEntries = data.filter((entry) =>
+            entry.serviceCategories?.some(
+              (cat) => cat.slug.current === category
+            )
+          );
+        }
+
+        // Sort by distance if postcode provided
+        if (postcode && filteredEntries.length > 0) {
+          try {
+            const postcodeCoords = await geocodePostcode(postcode);
+            if (postcodeCoords) {
+              filteredEntries = sortByDistance(filteredEntries, postcodeCoords);
+            }
+          } catch (error) {
+            console.error("Failed to geocode postcode:", error);
+          }
+        }
+
+        setEntries(filteredEntries);
+      } catch (error) {
+        console.error("Failed to load directory entries:", error);
+      } finally {
+        setLoading(false);
+        setSearchLoading(false);
+      }
+    }
+    
+    loadEntries();
+  }, [searchParams]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-neutral-50 to-white">
+        <Container className="py-16">
+          <div className="text-center">
+            <div className="w-6 h-6 border-2 border-neutral-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <div className="text-neutral-500">Loading directory...</div>
+          </div>
+        </Container>
+      </div>
+    );
+  }
+
+  const postcode = searchParams.get("postcode");
+  const category = searchParams.get("category");
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-neutral-50 to-white">
       <Container className="py-16">
         <div className="max-w-7xl mx-auto">
-          {/* Critical above-the-fold content - server rendered for LCP */}
           <h1 className="text-4xl font-light text-neutral-800 mb-6">
             {pageContent?.directoryPageTitle || "Care Directory"}
           </h1>
@@ -177,7 +294,42 @@ export default async function DirectoryPage() {
               "Browse trusted wellbeing and care services in your area. Each service has been carefully reviewed to ensure quality and reliability."}
           </p>
 
-          {/* Tiny client-side toolbar - Minimal JS, deferred interactivity */}
+          {/* Search Status */}
+          {postcode || category ? (
+            <div className="mb-8 p-4 bg-blue-50/80 border border-blue-200/60 rounded-lg">
+              <div className="flex items-center gap-2 text-blue-700">
+                {searchLoading ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                    <span>Finding services near you...</span>
+                  </>
+                ) : (
+                  <>
+                    <svg
+                      className="w-5 h-5"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    <span>
+                      {entries.length} service{entries.length !== 1 ? "s" : ""}{" "}
+                      found
+                      {postcode && ` near ${postcode.toUpperCase()}`}
+                      {category && category !== "all" && ` in category: ${category}`}
+                      {postcode && entries.length > 0 && entries[0].distance && entries[0].distance !== Infinity &&
+                        ` (closest: ${entries[0].distance.toFixed(1)} miles)`}
+                    </span>
+                  </>
+                )}
+              </div>
+            </div>
+          ) : null}
+
           <Suspense
             fallback={
               <div className="flex justify-between items-center p-4 bg-neutral-50 rounded-lg mb-6">
@@ -198,10 +350,26 @@ export default async function DirectoryPage() {
             />
           </Suspense>
 
-          {/* Server-rendered list (LCP element) - First paint priority */}
-          <DirectoryList entries={entries} />
+          <DirectoryList entries={entries} searchPostcode={postcode || undefined} />
         </div>
       </Container>
     </div>
+  );
+}
+
+export default function DirectoryPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-neutral-50 to-white">
+        <Container className="py-16">
+          <div className="text-center">
+            <div className="w-6 h-6 border-2 border-neutral-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <div className="text-neutral-500">Loading...</div>
+          </div>
+        </Container>
+      </div>
+    }>
+      <DirectoryContent />
+    </Suspense>
   );
 }
