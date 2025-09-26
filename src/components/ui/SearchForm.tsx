@@ -7,7 +7,7 @@ import { sanityClient } from "../../sanity/client";
 
 type Category = {
   _id: string;
-  title: string;
+  categoryName: string;
   slug: { current: string };
 };
 
@@ -39,9 +39,9 @@ export function SearchForm({
       try {
         setIsLoadingCategories(true);
         const fetchedCategories = await sanityClient.fetch(
-          `*[_type == "category"] | order(order asc, title asc) {
+          `*[_type == "category"] | order(displayOrder asc, categoryName asc) {
             _id,
-            title,
+            categoryName,
             slug
           }`
         );
@@ -150,7 +150,7 @@ export function SearchForm({
               </option>
               {categories.map((cat) => (
                 <option key={cat._id} value={cat.slug.current}>
-                  {cat.title}
+                  {cat.categoryName}
                 </option>
               ))}
             </select>

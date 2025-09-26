@@ -4,11 +4,11 @@ import type { DirectoryEntry } from "@/types/content";
 
 // GROQ queries for Sanity
 export const entriesQuery = `*[_type == "entry"] | order(_createdAt desc)`;
-export const categoriesQuery = `*[_type == "category"] | order(title asc)`;
+export const categoriesQuery = `*[_type == "category"] | order(title asc, categoryName asc)`;
 
 // Lean query for list view - no location/geo data to minimize payload
 export const LIST_SUMMARY_QUERY = `
-  *[_type == "directoryEntry" && isPublished == true] | order(displayPriority asc, serviceName asc) {
+  *[_type == "directoryEntry" && isPublished == true] | order(serviceName asc) {
     _id,
     serviceName,
     slug,
