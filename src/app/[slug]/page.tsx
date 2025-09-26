@@ -1,11 +1,11 @@
 import { notFound } from "next/navigation";
 import { sanityClient } from "@/sanity/client";
 import { Container } from "@/components/ui/Container";
-import { PortableText } from "@portabletext/react";
+import { PortableText, type PortableTextBlock } from "@portabletext/react";
 
 interface PageData {
   title: string;
-  content?: any[];
+  content?: PortableTextBlock[];
   isPublished: boolean;
 }
 
