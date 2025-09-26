@@ -42,6 +42,6 @@ export const structure: StructureResolver = (S) =>
 
       S.divider(),
 
-      // Other Pages
-      S.listItem().title("Other Pages").child(S.documentTypeList("page")),
+      // Legal Pages
+      S.listItem().title("Legal Pages").child(S.documentTypeList("page")),
     ]);

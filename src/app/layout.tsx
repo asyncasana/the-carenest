@@ -5,6 +5,7 @@ import { Header } from "../components/ui/Header";
 import { Footer } from "../components/ui/Footer";
 import { CookieBanner } from "../components/ui/CookieBanner";
 import { sanityClient } from "../sanity/client";
+import { urlFor } from "../sanity/lib/image";
 
 const merriweather = Merriweather({
   subsets: ["latin"],
@@ -22,9 +23,19 @@ const manrope = Manrope({
 });
 
 export async function generateMetadata() {
-  const settings = await sanityClient.fetch(
-    `*[_type == "siteSettings"][0]{siteTitle, siteDescription}`
-  );
+  const settings = await sanityClient.fetch(`
+    *[_type == "siteSettings"][0]{
+      siteTitle, 
+      siteDescription,
+      metaImage,
+      metaImageAlt
+    }
+  `);
+
+  const metaImage = settings?.metaImage
+    ? urlFor(settings.metaImage).width(1200).height(630).url()
+    : null;
+
   return {
     title: settings?.siteTitle,
     description: settings?.siteDescription,
@@ -37,6 +48,22 @@ export async function generateMetadata() {
       title: settings?.siteTitle,
       description: settings?.siteDescription,
       type: "website",
+      images: metaImage
+        ? [
+            {
+              url: metaImage,
+              width: 1200,
+              height: 630,
+              alt: settings?.metaImageAlt || settings?.siteTitle,
+            },
+          ]
+        : [],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: settings?.siteTitle,
+      description: settings?.siteDescription,
+      images: metaImage ? [metaImage] : [],
     },
     robots: {
       index: true,

@@ -5,31 +5,70 @@ export default defineType({
   title: "⚙️ Site Settings",
   type: "document",
   icon: () => "⚙️",
+  fieldsets: [
+    {
+      name: "seo",
+      title: "🔍 SEO & Social Sharing",
+      options: { collapsible: true, collapsed: false },
+    },
+    {
+      name: "branding",
+      title: "🎨 Logo & Branding",
+      options: { collapsible: true, collapsed: true },
+    },
+    {
+      name: "hero",
+      title: "🏠 Homepage Hero",
+      options: { collapsible: true, collapsed: true },
+    },
+  ],
   fields: [
-    // Site Identity
+    // Site Identity & SEO
     defineField({
       name: "siteTitle",
       title: "Site Title",
       type: "string",
       description: "The main site title",
+      fieldset: "seo",
     }),
     defineField({
       name: "siteDescription",
       title: "Site Description",
       type: "text",
       description: "Meta description for the site",
+      fieldset: "seo",
+    }),
+    defineField({
+      name: "metaImage",
+      title: "📸 Social Sharing Image",
+      type: "image",
+      description:
+        "Image shown when site is shared on Facebook, Twitter, etc. (1200x630px recommended)",
+      options: {
+        hotspot: true,
+      },
+      fieldset: "seo",
+    }),
+    defineField({
+      name: "metaImageAlt",
+      title: "Social Image Alt Text",
+      type: "string",
+      description: "Alt text for the social sharing image",
+      fieldset: "seo",
     }),
     defineField({
       name: "logo",
       title: "Site Logo",
       type: "image",
       description: "Main site logo",
+      fieldset: "branding",
     }),
     defineField({
       name: "logoAlt",
       title: "Logo Alt Text",
       type: "string",
       description: "Alt text for the logo",
+      fieldset: "branding",
     }),
 
     // Homepage Hero Section
@@ -38,6 +77,7 @@ export default defineType({
       title: "Hero Video URL",
       type: "url",
       description: "URL for the hero background video",
+      fieldset: "hero",
     }),
     defineField({
       name: "heroTopLine",
@@ -56,24 +96,28 @@ export default defineType({
       title: "Hero Subtitle",
       type: "text",
       description: "Subtitle/description under the hero title",
+      fieldset: "hero",
     }),
     defineField({
       name: "heroCTAText",
       title: "Hero CTA Button Text",
       type: "string",
       description: "Text for the hero call-to-action button",
+      fieldset: "hero",
     }),
     defineField({
       name: "heroCTAUrl",
       title: "Hero CTA Button URL",
       type: "string",
       description: "URL for the hero call-to-action button",
+      fieldset: "hero",
     }),
     defineField({
       name: "introText",
       title: "Intro Text",
       type: "text",
       description: "Main introduction text on homepage",
+      fieldset: "hero",
     }),
 
     // About Section
@@ -83,18 +127,21 @@ export default defineType({
       type: "boolean",
       description: "Display About section on homepage between hero and search",
       initialValue: false,
+      fieldset: "hero",
     }),
     defineField({
       name: "aboutSectionTitle",
       title: "About Section Title",
       type: "string",
       description: "Main title for the About section",
+      fieldset: "hero",
     }),
     defineField({
       name: "aboutSectionDescription",
       title: "About Section Description",
       type: "string",
       validation: (Rule) => Rule.max(200),
+      fieldset: "hero",
       description: "Optional subtitle/description - max 200 characters",
     }),
 
@@ -104,18 +151,21 @@ export default defineType({
       title: "Search Section Title",
       type: "string",
       description: "Title for the search section",
+      fieldset: "hero",
     }),
     defineField({
       name: "searchSectionSubtitle",
       title: "Search Section Subtitle",
       type: "string",
       description: "Subtitle for the search section",
+      fieldset: "hero",
     }),
     defineField({
       name: "searchSectionBackgroundImage",
       title: "Search Section Background Image",
       type: "image",
       description: "Optional subtle background image for search section",
+      fieldset: "hero",
     }),
 
     // Search CTA Section
@@ -125,11 +175,13 @@ export default defineType({
       type: "string",
       description:
         "Text for search call-to-action button (e.g., 'Find Care Services')",
+      fieldset: "hero",
     }),
     defineField({
       name: "postcodeLabel",
       title: "Postcode Input Label",
       type: "string",
+      fieldset: "hero",
       description: "Label for postcode input field",
     }),
     defineField({
@@ -137,15 +189,18 @@ export default defineType({
       title: "Postcode Placeholder",
       type: "string",
       description: "Placeholder text for postcode input",
+      fieldset: "hero",
     }),
     defineField({
       name: "categoryLabel",
       title: "Category Select Label",
       type: "string",
       description: "Label for category dropdown",
+      fieldset: "hero",
     }),
     defineField({
       name: "categoryPlaceholder",
+      fieldset: "hero",
       title: "Category Placeholder",
       type: "string",
       description: "Placeholder for category dropdown (e.g., 'All Services')",
@@ -156,6 +211,7 @@ export default defineType({
       name: "footerLinks",
       title: "Footer Links",
       type: "array",
+      fieldset: "branding",
       of: [
         {
           type: "object",
@@ -172,6 +228,7 @@ export default defineType({
       title: "Footer Copyright Text",
       type: "string",
       description: "Copyright text in footer",
+      fieldset: "branding",
     }),
 
     // Blog Page Content
