@@ -27,3 +27,18 @@ export async function fetchCategories() {
     slug
   }`);
 }
+
+export async function fetchSiteSettings() {
+  return sanityClient.fetch(`*[_type == "siteSettings"][0]{
+    "logo": logo.asset->url, 
+    logoAlt,
+    showBlogPage,
+    showFaqPage,
+    footerText, 
+    footerLinks,
+    "legalPages": *[_type == "page" && showInFooter == true && isPublished == true] | order(footerOrder asc) {
+      title,
+      slug
+    }
+  }`);
+}

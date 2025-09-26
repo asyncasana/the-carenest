@@ -38,15 +38,15 @@ export function SearchForm({
       try {
         setIsLoadingCategories(true);
         console.log("🔍 SearchForm: Fetching categories...");
-        
-        const response = await fetch('/api/categories', {
-          cache: 'no-store'
+
+        const response = await fetch("/api/categories", {
+          cache: "no-store",
         });
-        
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
+
         const fetchedCategories = await response.json();
         console.log(
           "📋 SearchForm: Categories fetched:",

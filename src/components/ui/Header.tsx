@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { sanityClient } from "../../sanity/client";
 
 type HeaderSettings = {
   logo?: string;
@@ -19,18 +18,21 @@ export function Header() {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const settings = await sanityClient.fetch(
-          `*[_type == "siteSettings"][0]{
-            "logo": logo.asset->url, 
-            logoAlt,
-            showBlogPage,
-            showFaqPage
-          }`
-        );
-        console.log("Fetched header settings:", settings);
+        console.log("🔍 Header: Fetching site settings...");
+        
+        const response = await fetch('/api/site-settings', {
+          cache: 'no-store'
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const settings = await response.json();
+        console.log("📋 Header: Site settings fetched:", settings);
         setHeaderSettings(settings || {});
       } catch (error) {
-        console.error("Failed to fetch header settings:", error);
+        console.error("❌ Header: Failed to fetch site settings:", error);
       }
     };
     fetchSettings();

@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { sanityClient } from "../../sanity/client";
+import { fetchSiteSettings } from "../../sanity/client";
 
 type FooterSettings = {
   footerText?: string;
@@ -8,27 +8,15 @@ type FooterSettings = {
   legalPages?: { title: string; slug: { current: string } }[];
 };
 
-async function getFooterSettings(): Promise<FooterSettings> {
-  return sanityClient.fetch(`
-    *[_type == "siteSettings"][0]{
-      footerText, 
-      footerLinks,
-      "legalPages": *[_type == "page" && showInFooter == true && isPublished == true] | order(footerOrder asc) {
-        title,
-        slug
-      }
-    }
-  `);
-}
-
 export async function Footer() {
-  const { footerText, footerLinks, legalPages } = await getFooterSettings();
+  const settings = await fetchSiteSettings();
+  const { footerText, footerLinks, legalPages } = settings || {};
   return (
     <footer className="w-full py-8 px-4 md:px-8 bg-white border-t border-neutral-200">
       <div className="max-w-5xl mx-auto flex flex-col items-center gap-2 text-center text-neutral-500 text-sm">
         <div className="flex flex-wrap justify-center gap-4 mb-2">
           {/* Custom footer links */}
-          {footerLinks?.map((link) =>
+          {footerLinks?.map((link: any) =>
             link.url ? (
               <Link
                 key={link.label}
@@ -47,7 +35,7 @@ export async function Footer() {
           )}
 
           {/* Legal pages */}
-          {legalPages?.map((page) => (
+          {legalPages?.map((page: any) => (
             <Link
               key={page.slug.current}
               href={`/${page.slug.current}`}
