@@ -49,6 +49,56 @@ export default defineType({
       name: "town",
       title: "Town/City", 
       type: "string",
+      options: {
+        list: [
+          // Essex and surrounding areas
+          { title: "Colchester", value: "Colchester" },
+          { title: "Chelmsford", value: "Chelmsford" },
+          { title: "Basildon", value: "Basildon" },
+          { title: "Southend-on-Sea", value: "Southend-on-Sea" },
+          { title: "Harlow", value: "Harlow" },
+          { title: "Brentwood", value: "Brentwood" },
+          { title: "Grays", value: "Grays" },
+          { title: "Clacton-on-Sea", value: "Clacton-on-Sea" },
+          { title: "Harwich", value: "Harwich" },
+          { title: "Maldon", value: "Maldon" },
+          { title: "Witham", value: "Witham" },
+          { title: "Braintree", value: "Braintree" },
+          { title: "Saffron Walden", value: "Saffron Walden" },
+          { title: "Epping", value: "Epping" },
+          { title: "Loughton", value: "Loughton" },
+          { title: "Chigwell", value: "Chigwell" },
+          { title: "Billericay", value: "Billericay" },
+          { title: "Wickford", value: "Wickford" },
+          { title: "Thurrock", value: "Thurrock" },
+          { title: "Burnham-on-Crouch", value: "Burnham-on-Crouch" },
+          
+          // Nearby Suffolk areas
+          { title: "Ipswich", value: "Ipswich" },
+          { title: "Bury St Edmunds", value: "Bury St Edmunds" },
+          { title: "Lowestoft", value: "Lowestoft" },
+          { title: "Felixstowe", value: "Felixstowe" },
+          { title: "Sudbury", value: "Sudbury" },
+          { title: "Haverhill", value: "Haverhill" },
+          
+          // Nearby Hertfordshire areas
+          { title: "Hertford", value: "Hertford" },
+          { title: "St Albans", value: "St Albans" },
+          { title: "Watford", value: "Watford" },
+          { title: "Hemel Hempstead", value: "Hemel Hempstead" },
+          { title: "Stevenage", value: "Stevenage" },
+          { title: "Hitchin", value: "Hitchin" },
+          { title: "Bishops Stortford", value: "Bishops Stortford" },
+          
+          // Other nearby areas
+          { title: "Cambridge", value: "Cambridge" },
+          { title: "Norwich", value: "Norwich" },
+          { title: "London", value: "London" },
+          
+          // Fallback option
+          { title: "Other area", value: "Other area" },
+        ],
+      },
     }),
     defineField({
       name: "website",
