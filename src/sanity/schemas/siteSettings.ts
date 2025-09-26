@@ -18,7 +18,32 @@ export default defineType({
     },
     {
       name: "hero",
-      title: "🏠 Homepage Hero",
+      title: "🦸 Hero Section",
+      options: { collapsible: true, collapsed: true },
+    },
+    {
+      name: "about",
+      title: "👋 About Section",
+      options: { collapsible: true, collapsed: true },
+    },
+    {
+      name: "search",
+      title: "🔍 Search Section",
+      options: { collapsible: true, collapsed: true },
+    },
+    {
+      name: "blog",
+      title: "📝 Blog Settings",
+      options: { collapsible: true, collapsed: true },
+    },
+    {
+      name: "faq",
+      title: "❓ FAQ Settings",
+      options: { collapsible: true, collapsed: true },
+    },
+    {
+      name: "footer",
+      title: "📄 Footer Settings",
       options: { collapsible: true, collapsed: true },
     },
   ],
@@ -127,21 +152,21 @@ export default defineType({
       type: "boolean",
       description: "Display About section on homepage between hero and search",
       initialValue: false,
-      fieldset: "hero",
+      fieldset: "about",
     }),
     defineField({
       name: "aboutSectionTitle",
       title: "About Section Title",
       type: "string",
       description: "Main title for the About section",
-      fieldset: "hero",
+      fieldset: "about",
     }),
     defineField({
       name: "aboutSectionDescription",
       title: "About Section Description",
       type: "string",
       validation: (Rule) => Rule.max(200),
-      fieldset: "hero",
+      fieldset: "about",
       description: "Optional subtitle/description - max 200 characters",
     }),
 
@@ -151,21 +176,21 @@ export default defineType({
       title: "Search Section Title",
       type: "string",
       description: "Title for the search section",
-      fieldset: "hero",
+      fieldset: "search",
     }),
     defineField({
       name: "searchSectionSubtitle",
       title: "Search Section Subtitle",
       type: "string",
       description: "Subtitle for the search section",
-      fieldset: "hero",
+      fieldset: "search",
     }),
     defineField({
       name: "searchSectionBackgroundImage",
       title: "Search Section Background Image",
       type: "image",
       description: "Optional subtle background image for search section",
-      fieldset: "hero",
+      fieldset: "search",
     }),
 
     // Search CTA Section
@@ -175,13 +200,13 @@ export default defineType({
       type: "string",
       description:
         "Text for search call-to-action button (e.g., 'Find Care Services')",
-      fieldset: "hero",
+      fieldset: "search",
     }),
     defineField({
       name: "postcodeLabel",
       title: "Postcode Input Label",
       type: "string",
-      fieldset: "hero",
+      fieldset: "search",
       description: "Label for postcode input field",
     }),
     defineField({
@@ -189,18 +214,18 @@ export default defineType({
       title: "Postcode Placeholder",
       type: "string",
       description: "Placeholder text for postcode input",
-      fieldset: "hero",
+      fieldset: "search",
     }),
     defineField({
       name: "categoryLabel",
       title: "Category Select Label",
       type: "string",
       description: "Label for category dropdown",
-      fieldset: "hero",
+      fieldset: "search",
     }),
     defineField({
       name: "categoryPlaceholder",
-      fieldset: "hero",
+      fieldset: "search",
       title: "Category Placeholder",
       type: "string",
       description: "Placeholder for category dropdown (e.g., 'All Services')",
@@ -211,7 +236,6 @@ export default defineType({
       name: "footerLinks",
       title: "Footer Links",
       type: "array",
-      fieldset: "branding",
       of: [
         {
           type: "object",
@@ -222,13 +246,14 @@ export default defineType({
         },
       ],
       description: "Footer navigation links",
+      fieldset: "footer",
     }),
     defineField({
       name: "footerText",
       title: "Footer Copyright Text",
       type: "string",
       description: "Copyright text in footer",
-      fieldset: "branding",
+      fieldset: "footer",
     }),
 
     // Blog Page Content
@@ -237,12 +262,14 @@ export default defineType({
       title: "Blog Page Title",
       type: "string",
       description: "Main title for the blog page",
+      fieldset: "blog",
     }),
     defineField({
       name: "blogPageSubtitle",
       title: "Blog Page Subtitle",
       type: "text",
       description: "Subtitle/description for the blog page",
+      fieldset: "blog",
     }),
 
     // FAQ Page Content
@@ -251,12 +278,14 @@ export default defineType({
       title: "FAQ Page Title",
       type: "string",
       description: "Main title for the FAQ page",
+      fieldset: "faq",
     }),
     defineField({
       name: "faqPageSubtitle",
       title: "FAQ Page Subtitle",
       type: "text",
       description: "Subtitle/description for the FAQ page",
+      fieldset: "faq",
     }),
 
     // Directory Page Content

@@ -146,6 +146,8 @@ export function SearchForm({
               <option value="">
                 {isLoadingCategories
                   ? "Loading categories..."
+                  : categories.length === 0
+                  ? "No categories available" 
                   : categoryPlaceholder || "All services"}
               </option>
               {categories.map((cat) => (
