@@ -34,13 +34,13 @@ export async function generateMetadata() {
 
   const metaImage = settings?.metaImage
     ? urlFor(settings.metaImage).width(1200).height(630).url()
-    : null;
+    : "https://the-carenest.vercel.app/logo-original.svg";
 
   return {
     title: settings?.siteTitle,
     description: settings?.siteDescription,
     // Performance optimizations
-    metadataBase: new URL("https://the-carenest.co.uk"),
+    metadataBase: new URL("https://the-carenest.vercel.app"),
     alternates: {
       canonical: "/",
     },
@@ -48,22 +48,21 @@ export async function generateMetadata() {
       title: settings?.siteTitle,
       description: settings?.siteDescription,
       type: "website",
-      images: metaImage
-        ? [
-            {
-              url: metaImage,
-              width: 1200,
-              height: 630,
-              alt: settings?.metaImageAlt || settings?.siteTitle,
-            },
-          ]
-        : [],
+      url: "https://the-carenest.vercel.app",
+      images: [
+        {
+          url: metaImage,
+          width: 1200,
+          height: 630,
+          alt: settings?.metaImageAlt || settings?.siteTitle || "The Carenest",
+        },
+      ],
     },
     twitter: {
       card: "summary_large_image",
       title: settings?.siteTitle,
       description: settings?.siteDescription,
-      images: metaImage ? [metaImage] : [],
+      images: [metaImage],
     },
     robots: {
       index: true,
