@@ -57,7 +57,13 @@ async function getMapData(): Promise<DirectoryEntry[]> {
 }
 
 // Component for rendering the list with distance info
-function DirectoryList({ entries, searchPostcode }: { entries: (DirectoryEntry & { distance?: number })[], searchPostcode?: string }) {
+function DirectoryList({
+  entries,
+  searchPostcode,
+}: {
+  entries: (DirectoryEntry & { distance?: number })[];
+  searchPostcode?: string;
+}) {
   return (
     <div className="service-list space-y-6">
       {entries.length > 0 ? (
@@ -114,11 +120,13 @@ function DirectoryList({ entries, searchPostcode }: { entries: (DirectoryEntry &
                 </svg>
                 {entry.serviceArea}
                 {entry.town ? `, ${entry.town}` : ""}
-                {entry.distance && entry.distance !== Infinity && searchPostcode && (
-                  <span className="text-blue-600 font-medium ml-2">
-                    ({entry.distance.toFixed(1)} miles away)
-                  </span>
-                )}
+                {entry.distance &&
+                  entry.distance !== Infinity &&
+                  searchPostcode && (
+                    <span className="text-blue-600 font-medium ml-2">
+                      ({entry.distance.toFixed(1)} miles away)
+                    </span>
+                  )}
               </span>
               {entry.phone && (
                 <span className="inline-flex items-center gap-2">
@@ -197,7 +205,9 @@ function DirectoryList({ entries, searchPostcode }: { entries: (DirectoryEntry &
 
 function DirectoryContent() {
   const searchParams = useSearchParams();
-  const [entries, setEntries] = useState<(DirectoryEntry & { distance?: number })[]>([]);
+  const [entries, setEntries] = useState<
+    (DirectoryEntry & { distance?: number })[]
+  >([]);
   const [pageContent, setPageContent] = useState<any>(null);
   const [mapEntries, setMapEntries] = useState<DirectoryEntry[]>([]);
   const [loading, setLoading] = useState(true);
@@ -217,16 +227,16 @@ function DirectoryContent() {
       try {
         setLoading(true);
         setSearchLoading(true);
-        
+
         const [data, content, mapData] = await Promise.all([
           getDirectoryEntries(),
           getDirectoryPageContent(),
-          getMapData()
+          getMapData(),
         ]);
-        
+
         setPageContent(content);
         setMapEntries(mapData);
-        
+
         let filteredEntries = data;
 
         // Get search parameters
@@ -262,7 +272,7 @@ function DirectoryContent() {
         setSearchLoading(false);
       }
     }
-    
+
     loadEntries();
   }, [searchParams]);
 
@@ -320,8 +330,13 @@ function DirectoryContent() {
                       {entries.length} service{entries.length !== 1 ? "s" : ""}{" "}
                       found
                       {postcode && ` near ${postcode.toUpperCase()}`}
-                      {category && category !== "all" && ` in category: ${category}`}
-                      {postcode && entries.length > 0 && entries[0].distance && entries[0].distance !== Infinity &&
+                      {category &&
+                        category !== "all" &&
+                        ` in category: ${category}`}
+                      {postcode &&
+                        entries.length > 0 &&
+                        entries[0].distance &&
+                        entries[0].distance !== Infinity &&
                         ` (closest: ${entries[0].distance.toFixed(1)} miles)`}
                     </span>
                   </>
@@ -350,7 +365,10 @@ function DirectoryContent() {
             />
           </Suspense>
 
-          <DirectoryList entries={entries} searchPostcode={postcode || undefined} />
+          <DirectoryList
+            entries={entries}
+            searchPostcode={postcode || undefined}
+          />
         </div>
       </Container>
     </div>
@@ -359,16 +377,18 @@ function DirectoryContent() {
 
 export default function DirectoryPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-br from-neutral-50 to-white">
-        <Container className="py-16">
-          <div className="text-center">
-            <div className="w-6 h-6 border-2 border-neutral-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <div className="text-neutral-500">Loading...</div>
-          </div>
-        </Container>
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gradient-to-br from-neutral-50 to-white">
+          <Container className="py-16">
+            <div className="text-center">
+              <div className="w-6 h-6 border-2 border-neutral-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+              <div className="text-neutral-500">Loading...</div>
+            </div>
+          </Container>
+        </div>
+      }
+    >
       <DirectoryContent />
     </Suspense>
   );

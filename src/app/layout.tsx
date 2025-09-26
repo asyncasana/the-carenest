@@ -33,7 +33,7 @@ export async function generateMetadata() {
   `);
 
   const metaImage = settings?.metaImage
-    ? urlFor(settings.metaImage).width(1200).height(630).url()
+    ? `${urlFor(settings.metaImage).width(1200).height(630).url()}?v=2025-09-26`
     : "https://the-carenest.vercel.app/logo-original.svg";
 
   return {

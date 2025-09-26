@@ -8,7 +8,7 @@ export default defineType({
   fields: [
     defineField({
       name: "serviceName",
-      title: "Service/Provider Name", 
+      title: "Service/Provider Name",
       type: "string",
       validation: (Rule) => Rule.required(),
     }),
@@ -20,14 +20,14 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: "shortDescription", 
+      name: "shortDescription",
       title: "Short Description",
       type: "text",
       validation: (Rule) => Rule.required().max(200),
     }),
     defineField({
       name: "serviceCategories",
-      title: "Service Categories", 
+      title: "Service Categories",
       type: "array",
       of: [{ type: "reference", to: [{ type: "category" }] }],
       validation: (Rule) => Rule.required().min(1),
@@ -47,7 +47,7 @@ export default defineType({
     }),
     defineField({
       name: "town",
-      title: "Town/City", 
+      title: "Town/City",
       type: "string",
       options: {
         list: [
@@ -72,7 +72,7 @@ export default defineType({
           { title: "Wickford", value: "Wickford" },
           { title: "Thurrock", value: "Thurrock" },
           { title: "Burnham-on-Crouch", value: "Burnham-on-Crouch" },
-          
+
           // Nearby Suffolk areas
           { title: "Ipswich", value: "Ipswich" },
           { title: "Bury St Edmunds", value: "Bury St Edmunds" },
@@ -80,7 +80,7 @@ export default defineType({
           { title: "Felixstowe", value: "Felixstowe" },
           { title: "Sudbury", value: "Sudbury" },
           { title: "Haverhill", value: "Haverhill" },
-          
+
           // Nearby Hertfordshire areas
           { title: "Hertford", value: "Hertford" },
           { title: "St Albans", value: "St Albans" },
@@ -89,12 +89,12 @@ export default defineType({
           { title: "Stevenage", value: "Stevenage" },
           { title: "Hitchin", value: "Hitchin" },
           { title: "Bishops Stortford", value: "Bishops Stortford" },
-          
+
           // Other nearby areas
           { title: "Cambridge", value: "Cambridge" },
           { title: "Norwich", value: "Norwich" },
           { title: "London", value: "London" },
-          
+
           // Fallback option
           { title: "Other area", value: "Other area" },
         ],
@@ -111,7 +111,7 @@ export default defineType({
       type: "string",
     }),
     defineField({
-      name: "email", 
+      name: "email",
       title: "Email Address",
       type: "string",
     }),
@@ -128,7 +128,7 @@ export default defineType({
     }),
     defineField({
       name: "isPublished",
-      title: "Published on Website", 
+      title: "Published on Website",
       type: "boolean",
       initialValue: true,
     }),
@@ -140,7 +140,7 @@ export default defineType({
     defineField({
       name: "fullDescription",
       title: "Full Service Description",
-      type: "array", 
+      type: "array",
       of: [{ type: "block" }],
     }),
     defineField({
@@ -154,7 +154,7 @@ export default defineType({
           fields: [
             {
               name: "alt",
-              title: "Alt Text", 
+              title: "Alt Text",
               type: "string",
               validation: (Rule) => Rule.required(),
             },
@@ -169,7 +169,7 @@ export default defineType({
     }),
     defineField({
       name: "specificServices",
-      title: "Specific Services Offered", 
+      title: "Specific Services Offered",
       type: "array",
       of: [{ type: "string" }],
     }),
@@ -194,7 +194,7 @@ export default defineType({
       of: [{ type: "string" }],
     }),
     defineField({
-      name: "qualifications", 
+      name: "qualifications",
       title: "Qualifications & Accreditations",
       type: "array",
       of: [{ type: "string" }],
@@ -208,9 +208,19 @@ export default defineType({
           type: "object",
           name: "review",
           fields: [
-            { name: "reviewText", title: "Review Text", type: "text", validation: (Rule) => Rule.required() },
+            {
+              name: "reviewText",
+              title: "Review Text",
+              type: "text",
+              validation: (Rule) => Rule.required(),
+            },
             { name: "clientName", title: "Client Name", type: "string" },
-            { name: "starRating", title: "Star Rating", type: "number", validation: (Rule) => Rule.min(1).max(5).integer() },
+            {
+              name: "starRating",
+              title: "Star Rating",
+              type: "number",
+              validation: (Rule) => Rule.min(1).max(5).integer(),
+            },
           ],
         },
       ],
@@ -219,7 +229,7 @@ export default defineType({
   preview: {
     select: {
       title: "serviceName",
-      subtitle: "shortDescription", 
+      subtitle: "shortDescription",
       area: "serviceArea",
     },
     prepare(selection) {
