@@ -19,15 +19,15 @@ export function Header() {
     const fetchSettings = async () => {
       try {
         console.log("🔍 Header: Fetching site settings...");
-        
-        const response = await fetch('/api/site-settings', {
-          cache: 'no-store'
+
+        const response = await fetch("/api/site-settings", {
+          cache: "no-store",
         });
-        
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
+
         const settings = await response.json();
         console.log("📋 Header: Site settings fetched:", settings);
         setHeaderSettings(settings || {});
