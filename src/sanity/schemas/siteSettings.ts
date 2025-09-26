@@ -43,7 +43,7 @@ export default defineType({
     },
     {
       name: "directory",
-      title: "📂 Directory Settings", 
+      title: "📂 Directory Settings",
       options: { collapsible: true, collapsed: true },
     },
     {

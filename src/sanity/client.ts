@@ -21,5 +21,9 @@ export async function fetchEntries() {
 }
 
 export async function fetchCategories() {
-  return sanityClient.fetch(`*[_type == "category"] | order(title asc)`);
+  return sanityClient.fetch(`*[_type == "category"] | order(displayOrder asc, categoryName asc) {
+    _id,
+    categoryName,
+    slug
+  }`);
 }

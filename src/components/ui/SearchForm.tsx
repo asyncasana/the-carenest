@@ -38,16 +38,24 @@ export function SearchForm({
     const fetchCategories = async () => {
       try {
         setIsLoadingCategories(true);
+        console.log("🔍 SearchForm: Fetching categories...");
         const fetchedCategories = await sanityClient.fetch(
           `*[_type == "category"] | order(displayOrder asc, categoryName asc) {
             _id,
             categoryName,
             slug
-          }`
+          }`,
+          {},
+          { cache: "no-store" } // Force fresh fetch
+        );
+        console.log(
+          "📋 SearchForm: Categories fetched:",
+          fetchedCategories?.length,
+          fetchedCategories
         );
         setCategories(fetchedCategories || []);
       } catch (error) {
-        console.error("Failed to fetch categories:", error);
+        console.error("❌ SearchForm: Failed to fetch categories:", error);
       } finally {
         setIsLoadingCategories(false);
       }
