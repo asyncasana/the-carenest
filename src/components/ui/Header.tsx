@@ -6,9 +6,7 @@ import Link from "next/link";
 import { sanityClient } from "../../sanity/client";
 
 type HeaderSettings = {
-  logo?: {
-    asset?: { url: string };
-  };
+  logo?: string;
   logoAlt?: string;
   showBlogPage?: boolean;
   showFaqPage?: boolean;
@@ -23,12 +21,13 @@ export function Header() {
       try {
         const settings = await sanityClient.fetch(
           `*[_type == "siteSettings"][0]{
-            logo{asset->{url}}, 
+            "logo": logo.asset->url, 
             logoAlt,
             showBlogPage,
             showFaqPage
           }`
         );
+        console.log("Fetched header settings:", settings);
         setHeaderSettings(settings || {});
       } catch (error) {
         console.error("Failed to fetch header settings:", error);
@@ -59,16 +58,14 @@ export function Header() {
         <div className="flex items-center justify-center h-[120px] sm:h-[140px] relative">
           {/* Logo - Centered */}
           <Link href="/" className="flex-shrink-0 h-full flex items-center">
-            {headerSettings.logo?.asset?.url && (
-              <Image
-                src={headerSettings.logo.asset.url}
-                alt={headerSettings.logoAlt || "The Carenest logo"}
-                width={140}
-                height={140}
-                className="drop-shadow-sm h-full w-auto"
-                priority
-              />
-            )}
+            <Image
+              src={headerSettings.logo || "/logo-original.svg"}
+              alt={headerSettings.logoAlt || "The Carenest logo"}
+              width={140}
+              height={140}
+              className="drop-shadow-sm h-full w-auto"
+              priority
+            />
           </Link>
 
           {/* Desktop Navigation - Positioned to the right */}

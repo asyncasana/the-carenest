@@ -2,33 +2,16 @@
 
 import React, { Suspense } from "react";
 import Link from "next/link";
-import dynamic from "next/dynamic";
+
 import { Container } from "@/components/ui/Container";
 import { Tag } from "@/components/ui/Tag";
 import { sanityClient } from "@/sanity/client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { geocodePostcode, sortByDistance } from "@/lib/geolocation";
 import type { DirectoryEntry } from "@/types/content";
 
-// Dynamic import to avoid SSR issues with Leaflet
-const DirectoryMap = dynamic(
-  () =>
-    import("@/components/ui/DirectoryMap").then((mod) => ({
-      default: mod.DirectoryMap,
-    })),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="w-full h-96 bg-neutral-100 rounded-lg flex items-center justify-center">
-        <div className="text-neutral-500 flex items-center gap-2">
-          <div className="w-4 h-4 border-2 border-neutral-400 border-t-transparent rounded-full animate-spin"></div>
-          Loading map...
-        </div>
-      </div>
-    ),
-  }
-);
+import { SimpleDirectoryView } from "@/components/ui/SimpleDirectoryView";
 
 async function getDirectoryEntries(): Promise<DirectoryEntry[]> {
   return sanityClient.fetch(`
@@ -61,8 +44,10 @@ async function getDirectoryPageContent() {
 
 function DirectoryContent() {
   const searchParams = useSearchParams();
+  const [allEntries, setAllEntries] = useState<DirectoryEntry[]>([]);
   const [entries, setEntries] = useState<DirectoryEntry[]>([]);
   const [selectedEntryId, setSelectedEntryId] = useState<string>();
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [loading, setLoading] = useState(true);
   const [searchLoading, setSearchLoading] = useState(false);
   const [pageContent, setPageContent] = useState<{
@@ -78,51 +63,62 @@ function DirectoryContent() {
   } | null>(null);
   const [postcodeError, setPostcodeError] = useState<string>("");
 
+  // Memoize search parameters to avoid unnecessary re-renders
+  const searchFilters = useMemo(
+    () => ({
+      postcode: searchParams.get("postcode"),
+      category: searchParams.get("category"),
+    }),
+    [searchParams]
+  );
+
   useEffect(() => {
     async function loadEntries() {
       try {
         setLoading(true);
-        setSearchLoading(true);
 
+        // Load data in parallel for better performance
         const [data, content] = await Promise.all([
           getDirectoryEntries(),
           getDirectoryPageContent(),
         ]);
         setPageContent(content);
+        setAllEntries(data);
 
         let filteredEntries = data;
 
-        // Get search parameters
-        const postcode = searchParams.get("postcode");
-        const category = searchParams.get("category");
-
-        // Filter by category if provided
-        if (category && category !== "all") {
+        // Filter by URL category if provided (fast, synchronous operation)
+        if (searchFilters.category && searchFilters.category !== "all") {
           filteredEntries = data.filter((entry) =>
             entry.serviceCategories?.some(
-              (cat) => cat.slug.current === category
+              (cat) => cat.slug.current === searchFilters.category
             )
           );
+          setSelectedCategory(searchFilters.category);
         }
 
-        // Sort by distance if postcode provided
-        if (postcode && filteredEntries.length > 0) {
+        // Handle postcode geocoding (async, potentially slow operation)
+        if (searchFilters.postcode && filteredEntries.length > 0) {
+          setSearchLoading(true);
           try {
             setPostcodeError("");
-            const postcodeCoords = await geocodePostcode(postcode);
+            const postcodeCoords = await geocodePostcode(
+              searchFilters.postcode
+            );
             if (postcodeCoords) {
               filteredEntries = sortByDistance(filteredEntries, postcodeCoords);
             } else {
               setPostcodeError(
-                `"${postcode}" is not a valid UK postcode. Try formats like CO1 1AA, M1 1AA, or B33 8TH.`
+                `"${searchFilters.postcode}" is not a valid UK postcode. Try formats like CO1 1AA, M1 1AA, or B33 8TH.`
               );
             }
           } catch (error) {
             console.error("Failed to geocode postcode:", error);
             setPostcodeError(
-              `Unable to find postcode "${postcode}". Please check the spelling or try a nearby postcode.`
+              `Unable to find postcode "${searchFilters.postcode}". Please check the spelling or try a nearby postcode.`
             );
           }
+          setSearchLoading(false);
         }
 
         setEntries(filteredEntries);
@@ -130,19 +126,29 @@ function DirectoryContent() {
         console.error("Failed to load directory entries:", error);
       } finally {
         setLoading(false);
-        setSearchLoading(false);
       }
     }
     loadEntries();
-  }, [searchParams]);
+  }, [searchFilters]);
 
-  const handleMarkerClick = (entryId: string) => {
+  const handleEntryClick = useCallback((entryId: string) => {
     setSelectedEntryId(entryId);
-  };
+  }, []);
 
-  const handleEntryClick = (entryId: string) => {
-    setSelectedEntryId(entryId);
-  };
+  const handleCategoryFilter = useCallback(
+    (category: string) => {
+      setSelectedCategory(category);
+      if (category === "all") {
+        setEntries(allEntries);
+      } else {
+        const filteredEntries = allEntries.filter((entry) =>
+          entry.serviceCategories?.some((cat) => cat.categoryName === category)
+        );
+        setEntries(filteredEntries);
+      }
+    },
+    [allEntries]
+  );
 
   if (loading) {
     return (
@@ -239,46 +245,84 @@ function DirectoryContent() {
             </div>
           ) : null}
 
-          {/* Split View: List + Map */}
-          <div className="grid lg:grid-cols-2 gap-8 mb-8">
-            {/* Service List */}
-            <div className="order-2 lg:order-1 space-y-6 max-h-[600px] overflow-y-auto pr-4">
-              {entries.length > 0 ? (
-                entries.map((entry, index) => (
-                  <div
-                    key={entry._id}
-                    onClick={() => handleEntryClick(entry._id)}
-                    className={`group cursor-pointer bg-white border rounded-xl p-6 hover:shadow-xl hover:shadow-neutral-200/25 transition-all duration-300 ${
-                      selectedEntryId === entry._id
-                        ? "border-blue-300 ring-2 ring-blue-200 shadow-lg"
-                        : "border-neutral-200 hover:border-amber-200 hover:-translate-y-1"
-                    }`}
-                    style={{
-                      animationDelay: `${index * 100}ms`,
-                      animation: "fadeInUp 0.6s ease-out forwards",
-                    }}
-                  >
-                    <h2 className="text-xl font-semibold text-neutral-800 mb-3 group-hover:text-neutral-900 transition-colors">
-                      {entry.serviceName}
-                    </h2>
-                    <p className="text-neutral-600 mb-4 leading-relaxed">
-                      {entry.shortDescription}
-                    </p>
+          {/* Directory Toolbar */}
+          <SimpleDirectoryView
+            entries={entries}
+            selectedEntryId={selectedEntryId}
+            onEntryClick={handleEntryClick}
+            onCategoryFilter={handleCategoryFilter}
+            selectedCategory={selectedCategory}
+          />
 
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {entry.serviceCategories?.map((category) => (
-                        <Tag key={category.slug.current} variant="category">
-                          {category.categoryName}
-                        </Tag>
-                      ))}
-                      {entry.fundingTypes?.map((funding) => (
-                        <Tag key={funding} variant="cost">
-                          {funding}
-                        </Tag>
-                      ))}
-                    </div>
+          {/* Service List */}
+          <div className="service-list space-y-6">
+            {entries.length > 0 ? (
+              entries.map((entry, index) => (
+                <div
+                  key={entry._id}
+                  onClick={() => handleEntryClick(entry._id)}
+                  className={`group cursor-pointer bg-white border rounded-xl p-6 hover:shadow-xl hover:shadow-neutral-200/25 transition-all duration-300 ${
+                    selectedEntryId === entry._id
+                      ? "border-blue-300 ring-2 ring-blue-200 shadow-lg"
+                      : "border-neutral-200 hover:border-amber-200 hover:-translate-y-1"
+                  }`}
+                  style={{
+                    animationDelay: `${index * 100}ms`,
+                    animation: "fadeInUp 0.6s ease-out forwards",
+                  }}
+                >
+                  <h2 className="text-xl font-semibold text-neutral-800 mb-3 group-hover:text-neutral-900 transition-colors">
+                    {entry.serviceName}
+                  </h2>
+                  <p className="text-neutral-600 mb-4 leading-relaxed">
+                    {entry.shortDescription}
+                  </p>
 
-                    <div className="flex flex-wrap gap-4 text-sm text-neutral-600 mb-4">
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {entry.serviceCategories?.map((category) => (
+                      <Tag key={category.slug.current} variant="category">
+                        {category.categoryName}
+                      </Tag>
+                    ))}
+                    {entry.fundingTypes?.map((funding) => (
+                      <Tag key={funding} variant="cost">
+                        {funding}
+                      </Tag>
+                    ))}
+                  </div>
+
+                  <div className="flex flex-wrap gap-4 text-sm text-neutral-600 mb-4">
+                    <span className="inline-flex items-center gap-2">
+                      <div className="flex-shrink-0 w-4 h-4">
+                        <svg
+                          className="w-4 h-4 text-neutral-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={1.5}
+                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={1.5}
+                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
+                        </svg>
+                      </div>
+                      {entry.serviceArea}
+                      {entry.town ? `, ${entry.town}` : ""}
+                      {entry.distance && entry.distance !== Infinity && (
+                        <span className="text-blue-600 font-medium ml-2">
+                          ({entry.distance.toFixed(1)} miles away)
+                        </span>
+                      )}
+                    </span>
+                    {entry.phone && (
                       <span className="inline-flex items-center gap-2">
                         <div className="flex-shrink-0 w-4 h-4">
                           <svg
@@ -291,116 +335,70 @@ function DirectoryContent() {
                               strokeLinecap="round"
                               strokeLinejoin="round"
                               strokeWidth={1.5}
-                              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                              d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
                             />
+                          </svg>
+                        </div>
+                        {entry.phone}
+                      </span>
+                    )}
+                    {entry.email && (
+                      <span className="inline-flex items-center gap-2">
+                        <div className="flex-shrink-0 w-4 h-4">
+                          <svg
+                            className="w-4 h-4 text-neutral-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
                             <path
                               strokeLinecap="round"
                               strokeLinejoin="round"
                               strokeWidth={1.5}
-                              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                              d="M3 8l7.89 7.89a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
                             />
                           </svg>
                         </div>
-                        {entry.serviceArea}
-                        {entry.town ? `, ${entry.town}` : ""}
-                        {entry.distance && entry.distance !== Infinity && (
-                          <span className="text-blue-600 font-medium ml-2">
-                            ({entry.distance.toFixed(1)} miles away)
-                          </span>
-                        )}
+                        {entry.email}
                       </span>
-                      {entry.phone && (
-                        <span className="inline-flex items-center gap-2">
-                          <div className="flex-shrink-0 w-4 h-4">
-                            <svg
-                              className="w-4 h-4 text-neutral-400"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={1.5}
-                                d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                              />
-                            </svg>
-                          </div>
-                          {entry.phone}
-                        </span>
-                      )}
-                      {entry.email && (
-                        <span className="inline-flex items-center gap-2">
-                          <div className="flex-shrink-0 w-4 h-4">
-                            <svg
-                              className="w-4 h-4 text-neutral-400"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={1.5}
-                                d="M3 8l7.89 7.89a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                              />
-                            </svg>
-                          </div>
-                          {entry.email}
-                        </span>
-                      )}
-                    </div>
+                    )}
+                  </div>
 
-                    <div className="pt-2 border-t border-neutral-100 flex items-center justify-between">
+                  <div className="pt-2 border-t border-neutral-100 flex items-center justify-between">
+                    <Link
+                      href={`/directory/${entry.slug.current}`}
+                      className="inline-flex items-center gap-2 text-neutral-700 hover:text-neutral-900 font-medium transition-all duration-200 hover:gap-3 mt-3"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <span>More Details</span>
+                      <span className="transition-transform group-hover:translate-x-1">
+                        →
+                      </span>
+                    </Link>
+                    {entry.website && (
                       <Link
-                        href={`/directory/${entry.slug.current}`}
-                        className="inline-flex items-center gap-2 text-neutral-700 hover:text-neutral-900 font-medium transition-all duration-200 hover:gap-3 mt-3"
+                        href={entry.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 text-amber-700 hover:text-amber-800 font-medium transition-all duration-200 hover:gap-3 mt-3"
                         onClick={(e) => e.stopPropagation()}
                       >
-                        <span>More Details</span>
+                        <span>Visit Website</span>
                         <span className="transition-transform group-hover:translate-x-1">
-                          →
+                          ↗
                         </span>
                       </Link>
-                      {entry.website && (
-                        <Link
-                          href={entry.website}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 text-amber-700 hover:text-amber-800 font-medium transition-all duration-200 hover:gap-3 mt-3"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <span>Visit Website</span>
-                          <span className="transition-transform group-hover:translate-x-1">
-                            ↗
-                          </span>
-                        </Link>
-                      )}
-                    </div>
+                    )}
                   </div>
-                ))
-              ) : (
-                <div className="text-center py-12">
-                  <p className="text-neutral-500">
-                    No services found. Check back soon!
-                  </p>
                 </div>
-              )}
-            </div>
-
-            {/* Interactive Map */}
-            <div className="order-1 lg:order-2 lg:sticky lg:top-8 lg:self-start">
-              <DirectoryMap
-                entries={entries}
-                selectedEntryId={selectedEntryId}
-                onMarkerClick={handleMarkerClick}
-              />
-              <div className="mt-4 text-center lg:hidden">
-                <p className="text-sm text-neutral-500">
-                  Click on services below to see them on the map
+              ))
+            ) : (
+              <div className="text-center py-12">
+                <p className="text-neutral-500">
+                  No services found. Check back soon!
                 </p>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </Container>

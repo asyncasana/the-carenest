@@ -111,6 +111,12 @@ export default defineType({
       type: "string",
       description: "Subtitle for the search section",
     }),
+    defineField({
+      name: "searchSectionBackgroundImage",
+      title: "Search Section Background Image",
+      type: "image",
+      description: "Optional subtle background image for search section",
+    }),
 
     // Search CTA Section
     defineField({

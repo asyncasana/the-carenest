@@ -22,6 +22,7 @@ async function getHomepageContent() {
       aboutSectionDescription,
       searchSectionTitle,
       searchSectionSubtitle,
+      "searchSectionBackgroundImage": searchSectionBackgroundImage.asset->url,
       searchCTAText,
       postcodeLabel,
       postcodePlaceholder,
@@ -144,31 +145,43 @@ async function HomepageContent() {
         </div>
       )}
 
-      <div className="bg-gradient-to-br from-neutral-50 to-white py-16">
-        <Container>
-          <div className="max-w-2xl mx-auto">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl md:text-3xl font-light text-neutral-800 mb-2">
-                {content?.searchSectionTitle || "Find Care Services"}
-              </h2>
-              {(content?.searchSectionSubtitle || content === null) && (
-                <p className="text-neutral-600">
-                  {content?.searchSectionSubtitle ||
-                    "Search our directory of trusted care providers in your area"}
-                </p>
-              )}
+      <div className="relative isolate bg-gradient-to-br from-neutral-50 to-white py-16">
+        {/* Subtle background image */}
+        {content?.searchSectionBackgroundImage && (
+          <div
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20 z-0"
+            style={{
+              backgroundImage: `url(${content.searchSectionBackgroundImage})`,
+            }}
+            aria-hidden="true"
+          />
+        )}
+        <div className="relative z-10">
+          <Container>
+            <div className="max-w-2xl mx-auto">
+              <div className="text-center mb-8">
+                <h2 className="text-2xl md:text-3xl font-light text-neutral-800 mb-2">
+                  {content?.searchSectionTitle || "Find Care Services"}
+                </h2>
+                {(content?.searchSectionSubtitle || content === null) && (
+                  <p className="text-neutral-600">
+                    {content?.searchSectionSubtitle ||
+                      "Search our directory of trusted care providers in your area"}
+                  </p>
+                )}
+              </div>
+              <div>
+                <SearchForm
+                  searchCTAText={content?.searchCTAText}
+                  postcodeLabel={content?.postcodeLabel}
+                  postcodePlaceholder={content?.postcodePlaceholder}
+                  categoryLabel={content?.categoryLabel}
+                  categoryPlaceholder={content?.categoryPlaceholder}
+                />
+              </div>
             </div>
-            <div>
-              <SearchForm
-                searchCTAText={content?.searchCTAText}
-                postcodeLabel={content?.postcodeLabel}
-                postcodePlaceholder={content?.postcodePlaceholder}
-                categoryLabel={content?.categoryLabel}
-                categoryPlaceholder={content?.categoryPlaceholder}
-              />
-            </div>
-          </div>
-        </Container>
+          </Container>
+        </div>
       </div>
     </>
   );
