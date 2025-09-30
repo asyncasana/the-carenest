@@ -73,18 +73,9 @@ export default function DirectoryMapView({
   }, []);
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      {/* Map */}
-      <div className="order-1 lg:order-1">
-        <DirectoryMap
-          entries={entriesWithLocation}
-          selectedEntryId={selectedEntryId}
-          onMarkerClick={handleMarkerClick}
-        />
-      </div>
-
-      {/* Listings */}
-      <div className="order-2 lg:order-2 max-h-96 overflow-y-auto">
+    <div className="flex flex-col lg:flex-row gap-6">
+      {/* Listings - Left side on desktop */}
+      <div className="lg:w-1/2 max-h-96 overflow-y-auto lg:order-1 order-2">
         <div className="space-y-4">
           {entries.length > 0 ? (
             entries.map((entry) => (
@@ -202,6 +193,15 @@ export default function DirectoryMapView({
             </div>
           )}
         </div>
+      </div>
+
+      {/* Map - Right side on desktop */}
+      <div className="lg:w-1/2 lg:order-2 order-1">
+        <DirectoryMap
+          entries={entriesWithLocation}
+          selectedEntryId={selectedEntryId}
+          onMarkerClick={handleMarkerClick}
+        />
       </div>
     </div>
   );

@@ -28,12 +28,14 @@ interface DirectoryToolbarProps {
   entries: DirectoryEntry[];
   categories: string[];
   mapEntries: DirectoryEntry[];
+  onViewModeChange?: (mode: "list" | "map") => void;
 }
 
 export const DirectoryToolbar = memo(function DirectoryToolbar({
   entries,
   categories,
   mapEntries,
+  onViewModeChange,
 }: DirectoryToolbarProps) {
   const [viewMode, setViewMode] = useState<"list" | "map">("list");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
@@ -84,16 +86,21 @@ export const DirectoryToolbar = memo(function DirectoryToolbar({
   }, []);
 
   // Handle view mode change with passive event handling
-  const handleViewChange = useCallback((mode: "list" | "map") => {
-    // Use requestIdleCallback for non-critical state updates
-    if ("requestIdleCallback" in window) {
-      requestIdleCallback(() => {
+  const handleViewChange = useCallback(
+    (mode: "list" | "map") => {
+      // Use requestIdleCallback for non-critical state updates
+      if ("requestIdleCallback" in window) {
+        requestIdleCallback(() => {
+          setViewMode(mode);
+          onViewModeChange?.(mode);
+        });
+      } else {
         setViewMode(mode);
-      });
-    } else {
-      setViewMode(mode);
-    }
-  }, []);
+        onViewModeChange?.(mode);
+      }
+    },
+    [onViewModeChange]
+  );
 
   // Cleanup debounce on unmount
   useEffect(() => {

@@ -181,6 +181,7 @@ export default function DirectoryClientComponent({
   const [mapEntries, setMapEntries] = useState<DirectoryEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchLoading, setSearchLoading] = useState(false);
+  const [viewMode, setViewMode] = useState<"list" | "map">("list");
 
   // Get unique categories for filtering
   const categories = Array.from(
@@ -318,9 +319,12 @@ export default function DirectoryClientComponent({
             entries={entries}
             categories={categories}
             mapEntries={mapEntries}
+            onViewModeChange={setViewMode}
           />
 
-          <DirectoryList entries={entries} searchPostcode={postcode} />
+          {viewMode === "list" && (
+            <DirectoryList entries={entries} searchPostcode={postcode} />
+          )}
         </div>
       </Container>
     </div>
