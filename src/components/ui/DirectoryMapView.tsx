@@ -37,6 +37,10 @@ export default function DirectoryMapView({
     setSelectedEntryId(entryId);
   }, []);
 
+  const handleListingClick = useCallback((entryId: string) => {
+    setSelectedEntryId(entryId);
+  }, []);
+
   // Filter map entries based on filtered entries (for category filtering)
   const filteredMapEntries =
     entries.length > 0
@@ -67,10 +71,6 @@ export default function DirectoryMapView({
       </div>
     );
   }
-
-  const handleListingClick = useCallback((entryId: string) => {
-    setSelectedEntryId(entryId);
-  }, []);
 
   return (
     <div className="flex flex-col lg:flex-row gap-6">

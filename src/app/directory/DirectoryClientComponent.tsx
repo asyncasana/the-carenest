@@ -177,7 +177,10 @@ export default function DirectoryClientComponent({
   const [entries, setEntries] = useState<
     (DirectoryEntry & { distance?: number })[]
   >([]);
-  const [pageContent, setPageContent] = useState<any>(null);
+  const [pageContent, setPageContent] = useState<{
+    directoryPageTitle?: string;
+    directoryPageSubtitle?: string;
+  } | null>(null);
   const [mapEntries, setMapEntries] = useState<DirectoryEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchLoading, setSearchLoading] = useState(false);
