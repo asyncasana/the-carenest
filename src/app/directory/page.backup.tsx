@@ -365,11 +365,7 @@ function DirectoryContent() {
           ) : null}
 
           {mounted && (
-            <DirectoryToolbar
-              entries={entries}
-              categories={categories}
-              mapEntries={mapEntries}
-            />
+            <DirectoryToolbar entries={entries} categories={categories} />
           )}
 
           <DirectoryList

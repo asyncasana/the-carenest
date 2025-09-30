@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useCallback, useMemo, useRef, useEffect, memo } from "react";
-import dynamic from "next/dynamic";
 import type { DirectoryEntry } from "@/types/content";
 
 // Memoized loading component to prevent re-creation
@@ -15,26 +14,15 @@ const LoadingComponent = memo(() => (
 ));
 LoadingComponent.displayName = "LoadingComponent";
 
-// Lazy load map component with optimized prefetching and proper chunk naming
-const DirectoryMapView = dynamic(
-  () => import("@/components/ui/DirectoryMapView"),
-  {
-    ssr: false,
-    loading: LoadingComponent,
-  }
-);
-
 interface DirectoryToolbarProps {
   entries: DirectoryEntry[];
   categories: string[];
-  mapEntries: DirectoryEntry[];
   onViewModeChange?: (mode: "list" | "map") => void;
 }
 
 export const DirectoryToolbar = memo(function DirectoryToolbar({
   entries,
   categories,
-  mapEntries,
   onViewModeChange,
 }: DirectoryToolbarProps) {
   const [viewMode, setViewMode] = useState<"list" | "map">("list");
@@ -180,13 +168,6 @@ export const DirectoryToolbar = memo(function DirectoryToolbar({
           </div>
         </div>
       </div>
-
-      {/* Map View - Only render when selected */}
-      {viewMode === "map" && (
-        <div className="mb-8">
-          <DirectoryMapView entries={filteredEntries} mapEntries={mapEntries} />
-        </div>
-      )}
     </>
   );
 });

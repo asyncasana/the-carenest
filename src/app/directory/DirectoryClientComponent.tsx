@@ -278,7 +278,6 @@ export default function DirectoryClientComponent({
           <DirectoryToolbar
             entries={entries}
             categories={categories}
-            mapEntries={mapEntries}
             onViewModeChange={setViewMode}
           />
 
