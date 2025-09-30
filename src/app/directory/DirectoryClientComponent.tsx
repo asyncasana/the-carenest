@@ -6,7 +6,7 @@ import { Container } from "@/components/ui/Container";
 import { Tag } from "@/components/ui/Tag";
 import { DirectoryToolbar } from "@/components/ui/DirectoryToolbar";
 import DirectoryMapView from "@/components/ui/DirectoryMapView";
-import { sanityClient } from "@/sanity/client";
+import { sanityClient } from "@/lib/sanity";
 import { geocodePostcode, sortByDistance } from "@/lib/geolocation";
 import type { DirectoryEntry } from "@/types/content";
 
@@ -184,7 +184,6 @@ export default function DirectoryClientComponent({
   } | null>(null);
   const [mapEntries, setMapEntries] = useState<DirectoryEntry[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchLoading, setSearchLoading] = useState(false);
   const [viewMode, setViewMode] = useState<"list" | "map">("list");
 
   // Get unique categories for filtering
@@ -200,7 +199,6 @@ export default function DirectoryClientComponent({
     async function loadEntries() {
       try {
         setLoading(true);
-        setSearchLoading(true);
 
         const [data, content, mapData] = await Promise.all([
           getDirectoryEntries(),
@@ -246,7 +244,6 @@ export default function DirectoryClientComponent({
         });
       } finally {
         setLoading(false);
-        setSearchLoading(false);
       }
     }
 
