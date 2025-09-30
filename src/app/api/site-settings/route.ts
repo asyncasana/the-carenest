@@ -3,8 +3,6 @@ import { sanityClient } from "@/sanity/client";
 
 export async function GET() {
   try {
-    console.log("🔍 API: Fetching site settings for client...");
-
     const settings = await sanityClient.fetch(
       `*[_type == "siteSettings"][0]{
         "logo": logo.asset->url, 
@@ -20,8 +18,6 @@ export async function GET() {
       }`
     );
 
-    console.log("📋 API: Site settings fetched:", settings);
-
     return NextResponse.json(settings || {}, {
       headers: {
         "Cache-Control":
@@ -31,7 +27,7 @@ export async function GET() {
       },
     });
   } catch (error) {
-    console.error("❌ API: Failed to fetch site settings:", error);
+    console.error("Failed to fetch site settings:", error);
     return NextResponse.json(
       { error: "Failed to fetch site settings" },
       { status: 500 }

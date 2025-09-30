@@ -27,7 +27,7 @@ export default function ShareArticle({
       try {
         await navigator.share(shareData);
       } catch (error) {
-        console.log("Error sharing:", error);
+        console.error("Error sharing:", error);
       }
     }
   };

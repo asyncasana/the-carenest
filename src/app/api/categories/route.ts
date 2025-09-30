@@ -3,11 +3,7 @@ import { fetchCategories } from "@/sanity/client";
 
 export async function GET() {
   try {
-    console.log("🔍 API: Fetching categories for client...");
-
     const categories = await fetchCategories();
-
-    console.log("📋 API: Categories fetched:", categories?.length, categories);
 
     return NextResponse.json(categories || [], {
       headers: {
@@ -18,7 +14,7 @@ export async function GET() {
       },
     });
   } catch (error) {
-    console.error("❌ API: Failed to fetch categories:", error);
+    console.error("Failed to fetch categories:", error);
     return NextResponse.json(
       { error: "Failed to fetch categories" },
       { status: 500 }

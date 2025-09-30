@@ -18,8 +18,6 @@ export function Header() {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        console.log("🔍 Header: Fetching site settings...");
-
         const response = await fetch("/api/site-settings", {
           cache: "no-store",
         });
@@ -29,10 +27,9 @@ export function Header() {
         }
 
         const settings = await response.json();
-        console.log("📋 Header: Site settings fetched:", settings);
         setHeaderSettings(settings || {});
       } catch (error) {
-        console.error("❌ Header: Failed to fetch site settings:", error);
+        console.error("Failed to fetch site settings:", error);
       }
     };
     fetchSettings();

@@ -37,7 +37,6 @@ export function SearchForm({
     const fetchCategories = async () => {
       try {
         setIsLoadingCategories(true);
-        console.log("🔍 SearchForm: Fetching categories...");
 
         const response = await fetch("/api/categories", {
           cache: "no-store",
@@ -48,14 +47,9 @@ export function SearchForm({
         }
 
         const fetchedCategories = await response.json();
-        console.log(
-          "📋 SearchForm: Categories fetched:",
-          fetchedCategories?.length,
-          fetchedCategories
-        );
         setCategories(fetchedCategories || []);
       } catch (error) {
-        console.error("❌ SearchForm: Failed to fetch categories:", error);
+        console.error("Failed to fetch categories:", error);
       } finally {
         setIsLoadingCategories(false);
       }
