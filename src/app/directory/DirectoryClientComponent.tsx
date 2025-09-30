@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { Tag } from "@/components/ui/Tag";
 import { DirectoryToolbar } from "@/components/ui/DirectoryToolbar";
+import DirectoryMapView from "@/components/ui/DirectoryMapView";
 import { sanityClient } from "@/sanity/client";
 import { geocodePostcode, sortByDistance } from "@/lib/geolocation";
 import type { DirectoryEntry } from "@/types/content";
@@ -277,47 +278,6 @@ export default function DirectoryClientComponent({
               "Browse trusted wellbeing and care services in your area."}
           </p>
 
-          {/* Search Status */}
-          {postcode || category ? (
-            <div className="mb-8 p-4 bg-blue-50/80 border border-blue-200/60 rounded-lg">
-              <div className="flex items-center gap-2 text-blue-700">
-                {searchLoading ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                    <span>Finding services near you...</span>
-                  </>
-                ) : (
-                  <>
-                    <svg
-                      className="w-5 h-5"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    <span>
-                      {entries.length} service{entries.length !== 1 ? "s" : ""}{" "}
-                      found
-                      {postcode && ` near ${postcode.toUpperCase()}`}
-                      {category &&
-                        category !== "all" &&
-                        ` in category: ${category}`}
-                      {postcode &&
-                        entries.length > 0 &&
-                        entries[0].distance &&
-                        entries[0].distance !== Infinity &&
-                        ` (closest: ${entries[0].distance.toFixed(1)} miles)`}
-                    </span>
-                  </>
-                )}
-              </div>
-            </div>
-          ) : null}
-
           <DirectoryToolbar
             entries={entries}
             categories={categories}
@@ -327,6 +287,10 @@ export default function DirectoryClientComponent({
 
           {viewMode === "list" && (
             <DirectoryList entries={entries} searchPostcode={postcode} />
+          )}
+
+          {viewMode === "map" && (
+            <DirectoryMapView entries={entries} mapEntries={mapEntries} />
           )}
         </div>
       </Container>
