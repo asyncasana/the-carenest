@@ -2,6 +2,7 @@ import React from "react";
 import { Container } from "@/components/ui/Container";
 import { sanityClient } from "@/sanity/client";
 import { PortableText, type PortableTextBlock } from "@portabletext/react";
+import { FAQList } from "@/components/ui/FAQList";
 
 type FAQ = {
   _id: string;
@@ -48,34 +49,7 @@ export default async function FAQPage() {
               "Common questions about care and wellbeing services in your area."}
           </p>
 
-          <div className="space-y-4">
-            {faqs.length > 0 ? (
-              faqs.map((faq) => (
-                <details
-                  key={faq._id}
-                  className="bg-white/80 backdrop-blur border border-neutral-200 rounded-lg p-6 hover:shadow-md transition-shadow group"
-                >
-                  <summary className="cursor-pointer text-lg font-medium text-neutral-800 hover:text-amber-700 transition-colors list-none">
-                    <div className="flex items-center justify-between">
-                      <span>{faq.question}</span>
-                      <span className="text-2xl text-neutral-400 group-open:rotate-45 transition-transform">
-                        +
-                      </span>
-                    </div>
-                  </summary>
-                  <div className="mt-4 pt-4 border-t border-neutral-200 prose prose-neutral max-w-none">
-                    <PortableText value={faq.answer} />
-                  </div>
-                </details>
-              ))
-            ) : (
-              <div className="text-center py-12">
-                <p className="text-neutral-500">
-                  No FAQs available yet. Check back soon!
-                </p>
-              </div>
-            )}
-          </div>
+          <FAQList faqs={faqs} />
         </div>
       </Container>
     </div>

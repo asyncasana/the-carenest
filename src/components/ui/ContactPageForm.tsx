@@ -148,7 +148,7 @@ export function ContactPageForm() {
 
           <button
             type="submit"
-            className="w-full bg-accent text-text-main font-medium py-3 px-6 rounded-lg hover:bg-[#e5e1d1] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-md active:scale-95"
+            className="w-full bg-amber-100 border border-amber-200 text-amber-900 font-medium py-3 px-6 rounded-lg hover:bg-amber-200 hover:border-amber-300 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-md active:scale-95 shadow-sm"
             disabled={status === "loading" || !agreedToTerms}
           >
             {status === "loading" ? (
