@@ -1,22 +1,23 @@
 import React from "react";
 import { Container } from "@/components/ui/Container";
 import { sanityClient } from "@/sanity/client";
+import { PortableText, type PortableTextBlock } from "@portabletext/react";
 
 type FAQ = {
   _id: string;
   question: string;
-  answer: string;
-  order?: number;
+  answer: PortableTextBlock[];
+  displayOrder?: number;
   category?: string;
 };
 
 async function getFAQs(): Promise<FAQ[]> {
   return sanityClient.fetch(`
-    *[_type == "faq"] | order(order asc, question asc) {
+    *[_type == "faq"] | order(displayOrder asc, question asc) {
       _id,
       question,
       answer,
-      order,
+      displayOrder,
       category
     }
   `);
@@ -62,10 +63,8 @@ export default async function FAQPage() {
                       </span>
                     </div>
                   </summary>
-                  <div className="mt-4 pt-4 border-t border-neutral-200">
-                    <p className="text-neutral-600 leading-relaxed whitespace-pre-wrap">
-                      {faq.answer}
-                    </p>
+                  <div className="mt-4 pt-4 border-t border-neutral-200 prose prose-neutral max-w-none">
+                    <PortableText value={faq.answer} />
                   </div>
                 </details>
               ))

@@ -30,6 +30,10 @@ export async function fetchCategories() {
 
 export async function fetchSiteSettings() {
   return sanityClient.fetch(`*[_type == "siteSettings"][0]{
+    siteTitle,
+    siteDescription,
+    metaImage,
+    metaImageAlt,
     "logo": logo.asset->url, 
     logoAlt,
     showBlogPage,
