@@ -28,7 +28,11 @@ async function getHomepageContent() {
       postcodePlaceholder,
       categoryLabel,
       categoryPlaceholder
-    }`
+    }`,
+    {},
+    {
+      next: { revalidate: 60 }, // Revalidate every 60 seconds
+    }
   );
 }
 
@@ -46,7 +50,11 @@ async function getAboutCarouselItems() {
       ctaUrl,
       displayOrder,
       isActive
-    }`
+    }`,
+    {},
+    {
+      next: { revalidate: 60 }, // Revalidate every 60 seconds
+    }
   );
 }
 
